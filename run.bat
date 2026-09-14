@@ -1,0 +1,2 @@
+wails build
+wails dev
