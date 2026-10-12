@@ -4,6 +4,11 @@ export interface Transform {
   scale: number;
 }
 
+export interface Environment {
+  xTargetResolution: number;
+  yTargetResolution: number;
+}
+
 export type ID = string;
 
 export interface EditorNodeStyles {

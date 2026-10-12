@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { pointer, select } from 'd3-selection';
 import { zoom, ZoomTransform } from 'd3-zoom';
 
-import { type EditorNode, type Transform } from '../../lib/editor/editor.types';
+import { type EditorNode, type Transform, type Environment } from '../../lib/editor/editor.types';
 import CanvasNode from './CanvasNode';
 import CanvasInfoBar from './CanvasInfoBar';
 
@@ -11,9 +11,17 @@ import CanvasInfoBar from './CanvasInfoBar';
 // - SVG components so zooming in is clean
 // - On screen zoom controls: +, -, x (reset)
 
-/*
-  Check if the input from an event is using a mousewheel.
-*/
+// TODO:
+// - Remember coordinates should be (0, 0) in top-left, (+x, +x) bottom-right
+// - Press F to center canvas on the target aspect box, ideally should put the aspect outline in frame,
+//   so set zoom appropriately
+// - Press R to reset zoom to 100%
+// - Tool bar, command bar, zoom info
+// - Fix quality of nodes when zooming in?
+
+/**
+ * Check if the input from an event is using a mousewheel.
+ */
 function isMouseWheel(event: any) {
   if (Math.abs(event.deltaX) > 0) {
     return false;
@@ -25,7 +33,7 @@ function isMouseWheel(event: any) {
   return isInteger && isLargeStep;
 }
 
-export default function Canvas() {
+export default function Canvas({ environment }: { environment: Environment }) {
   // Store nodes
   const [nodes, setNodes] = useState<EditorNode[]>([
     { id: 'card-1', name: 'card-1', x: 150, y: 150 },
@@ -120,7 +128,18 @@ export default function Canvas() {
           backgroundPosition: `${transform.x}px ${transform.y}px`,
         }}
       >
-        <div ref={viewportRef} className="absolute inset-0 origin-top-left will-change-transform">
+        {/* Aspect target outline */}
+        <div
+          className="border-surface/60 absolute inset-0 border-3 border-dashed"
+          style={{
+            width: `${environment.xTargetResolution * transform.scale}px`,
+            height: `${environment.yTargetResolution * transform.scale}px`,
+            top: `${transform.y}px`,
+            left: `${transform.x}px`,
+          }}
+        ></div>
+        {/* Nodes */}
+        <div ref={viewportRef} className="relative inset-0 origin-top-left will-change-transform">
           {nodes.map((node) => (
             <CanvasNode key={node.id} node={node} transformRef={transformRef} onDragComplete={updateNodePosition} />
           ))}

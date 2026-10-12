@@ -3,6 +3,10 @@ import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { disableNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/disable-native-drag-preview';
 
 import { type Transform, type EditorNode } from '../../lib/editor/editor.types';
+import { cn } from '../../lib/utils';
+
+// TODO:
+// - Small movements with arrow keys
 
 interface CanvasNodeProps {
   node: EditorNode;
@@ -52,8 +56,9 @@ export default function CanvasNode({ node, transformRef, onDragComplete }: Canva
     });
   }, [node.id, onDragComplete, transformRef]);
 
-  const currentX = node.x + dragOffset.x;
-  const currentY = node.y + dragOffset.y;
+  const step = 4;
+  const currentX = Math.ceil((node.x + dragOffset.x) / step) * step;
+  const currentY = Math.ceil((node.y + dragOffset.y) / step) * step;
 
   const style: React.CSSProperties = {
     position: 'absolute',
@@ -67,29 +72,22 @@ export default function CanvasNode({ node, transformRef, onDragComplete }: Canva
     <div
       ref={elementRef}
       style={style}
-      className={`bg-background text-body w-64 rounded-lg border px-4 py-3 transition-shadow duration-150 ${
+      className={cn(
+        'bg-background text-surface-light flex h-32 w-32 items-center justify-center rounded-lg border-3 transition-shadow duration-150',
         isDragging
           ? 'border-primary-light cursor-grabbing shadow-2xl'
-          : 'cursor-grab border-slate-800 shadow-md hover:border-slate-700'
-      }`}
+          : 'hover:border-primary cursor-grab border-transparent shadow-md',
+      )}
     >
-      <div className="mb-2 flex items-center justify-between">
-        <span className="border-primary-light bg-primary-dark/50 text-primary-light rounded border px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase">
-          {node.name}
-        </span>
-        <span className="text-surface-light font-mono text-[10px]">
-          {Math.round(node.x)},{Math.round(node.y)}
-        </span>
-      </div>
-
-      <input
+      {Math.round(currentX)}, {Math.round(currentY)}
+      {/* <input
         type="text"
         placeholder="Focusable property text..."
         className="border-surface bg-background text-body focus:border-primary w-full rounded border px-2 py-1 text-xs focus:outline-none"
         onKeyDown={(e) => e.stopPropagation()}
         onPointerDown={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
-      />
+      /> */}
     </div>
   );
 }
