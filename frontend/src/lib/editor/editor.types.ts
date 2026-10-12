@@ -1,6 +1,7 @@
-export interface Coordinates {
+export interface Transform {
   x: number;
   y: number;
+  scale: number;
 }
 
 export type ID = string;
@@ -13,10 +14,11 @@ export interface EditorNodeStyles {
 
 export interface EditorNode {
   id: ID;
-  coordinates: Coordinates;
+  x: number;
+  y: number;
   name: string;
-  children: ID[];
-  styles: EditorNodeStyles;
+  children?: ID[];
+  styles?: EditorNodeStyles;
 }
 
 export interface EditorState {

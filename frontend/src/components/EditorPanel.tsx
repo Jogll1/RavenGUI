@@ -10,7 +10,7 @@ export default function EditorPanel({ className, children, title, contentClassNa
   return (
     <Panel
       className={cn(
-        'bg-surface-dark border-background flex h-full flex-col border-r-3 border-b-3 border-l-3',
+        'bg-surface-dark border-background flex h-full flex-col rounded-md border-r-3 border-b-3 border-l-3',
         className,
       )}
       {...rest}
