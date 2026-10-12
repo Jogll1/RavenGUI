@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { DEFAULT_TARGET_X, DEFAULT_TARGET_Y } from '../lib/editor/editor.shared';
+import { Environment } from '../lib/editor/editor.types';
 
 type AspectSetter = (v: number) => void;
 
@@ -36,12 +37,10 @@ function AspectInput({ name, defaultValue, aspectSetter }: AspectInputProps) {
   );
 }
 
-interface HeaderProps {
-  xAspectSetter: AspectSetter;
-  yAspectSetter: AspectSetter;
-}
+// TODO:
+// - View should have an option to reset the resizable panels, reset panning, and reset zoom, etc.
 
-export default function Header({ xAspectSetter, yAspectSetter }: HeaderProps) {
+export default function Header({ environment }: { environment: Environment }) {
   return (
     <header className="top-0 z-50 grid min-w-screen grid-cols-3">
       <nav className="bg-background text-muted col-start-1 flex items-center gap-8 px-4 py-2 text-sm">
@@ -53,9 +52,17 @@ export default function Header({ xAspectSetter, yAspectSetter }: HeaderProps) {
       <div className="col-start-2 flex w-full flex-row items-center justify-center gap-4">
         <nav className="bg-background text-muted flex items-center gap-1 px-4 py-2 text-sm">
           Target:
-          <AspectInput name="x-input" defaultValue={DEFAULT_TARGET_X} aspectSetter={xAspectSetter} />
+          <AspectInput
+            name="x-input"
+            defaultValue={DEFAULT_TARGET_X}
+            aspectSetter={environment.xTargetResolution.setter}
+          />
           ×
-          <AspectInput name="y-input" defaultValue={DEFAULT_TARGET_Y} aspectSetter={yAspectSetter} />
+          <AspectInput
+            name="y-input"
+            defaultValue={DEFAULT_TARGET_Y}
+            aspectSetter={environment.yTargetResolution.setter}
+          />
         </nav>
       </div>
     </header>

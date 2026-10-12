@@ -15,7 +15,7 @@ export default function EditorPanel({ className, children, title, contentClassNa
       )}
       {...rest}
     >
-      {title && <h1 className="text-muted px-3 pt-2 pb-1 text-sm">{title}</h1>}
+      {title && <h1 className="text-muted px-3 pt-2 pb-1 text-sm font-bold">{title}</h1>}
       <div className={cn('bg-background m-1 h-full', contentClassName)}>{children}</div>
     </Panel>
   );

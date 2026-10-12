@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { pointer, select } from 'd3-selection';
 import { zoom, ZoomTransform } from 'd3-zoom';
 
-import { type EditorNode, type Transform, type Environment } from '../../lib/editor/editor.types';
+import { type Transform, type Environment, type EditorNodeRecord } from '../../lib/editor/editor.types';
 import CanvasNode from './CanvasNode';
 import CanvasInfoBar from './CanvasInfoBar';
 
@@ -35,10 +35,7 @@ function isMouseWheel(event: any) {
 
 export default function Canvas({ environment }: { environment: Environment }) {
   // Store nodes
-  const [nodes, setNodes] = useState<EditorNode[]>([
-    { id: 'card-1', name: 'card-1', x: 150, y: 150 },
-    { id: 'card-2', name: 'card-2', x: 400, y: 400 },
-  ]);
+  const [nodes, setNodes] = [environment.nodes.value, environment.nodes.setter];
 
   // Current scale and panning offset
   const [transform, setTransform] = useState<Transform>({ x: 0, y: 0, scale: 1 });
@@ -102,18 +99,22 @@ export default function Canvas({ environment }: { environment: Environment }) {
 
   // Handle position updates upon drop completion
   const updateNodePosition = (id: string, deltaX: number, deltaY: number) => {
-    setNodes((prev) =>
-      prev.map((node) => {
-        if (node.id === id) {
-          return {
-            ...node,
-            x: node.x + deltaX / transformRef.current.scale,
-            y: node.y + deltaY / transformRef.current.scale,
-          };
-        }
-        return node;
-      }),
-    );
+    setNodes((prev) => {
+      const updated = Object.entries(prev).map(([key, node]) => {
+        return [
+          key,
+          key === id
+            ? {
+                ...node,
+                x: node.x + deltaX / transformRef.current.scale,
+                y: node.y + deltaY / transformRef.current.scale,
+              }
+            : node,
+        ];
+      });
+
+      return Object.fromEntries(updated) as EditorNodeRecord;
+    });
   };
 
   return (
@@ -132,15 +133,15 @@ export default function Canvas({ environment }: { environment: Environment }) {
         <div
           className="border-surface/60 absolute inset-0 border-3 border-dashed"
           style={{
-            width: `${environment.xTargetResolution * transform.scale}px`,
-            height: `${environment.yTargetResolution * transform.scale}px`,
+            width: `${environment.xTargetResolution.value * transform.scale}px`,
+            height: `${environment.yTargetResolution.value * transform.scale}px`,
             top: `${transform.y}px`,
             left: `${transform.x}px`,
           }}
         ></div>
         {/* Nodes */}
         <div ref={viewportRef} className="relative inset-0 origin-top-left will-change-transform">
-          {nodes.map((node) => (
+          {Object.values(nodes).map((node) => (
             <CanvasNode key={node.id} node={node} transformRef={transformRef} onDragComplete={updateNodePosition} />
           ))}
         </div>

@@ -4,9 +4,21 @@ export interface Transform {
   scale: number;
 }
 
+export interface ValueSetter<T> {
+  value: T;
+  setter: React.Dispatch<React.SetStateAction<T>>;
+}
+
+// Could add a getter to this?
+export type EditorNodeRecord = Record<ID, EditorNode>;
+
 export interface Environment {
-  xTargetResolution: number;
-  yTargetResolution: number;
+  nodes: ValueSetter<EditorNodeRecord>;
+  root: ID;
+  selected: ValueSetter<ID | null>;
+
+  xTargetResolution: ValueSetter<number>;
+  yTargetResolution: ValueSetter<number>;
 }
 
 export type ID = string;
@@ -24,10 +36,4 @@ export interface EditorNode {
   name: string;
   children?: ID[];
   styles?: EditorNodeStyles;
-}
-
-export interface EditorState {
-  rootNodeID: ID;
-  selectedNodeID: ID | null;
-  nodes: Record<ID, EditorNode>;
 }

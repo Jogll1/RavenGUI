@@ -73,21 +73,16 @@ export default function CanvasNode({ node, transformRef, onDragComplete }: Canva
       ref={elementRef}
       style={style}
       className={cn(
-        'bg-background text-surface-light flex h-32 w-32 items-center justify-center rounded-lg border-3 transition-shadow duration-150',
+        'bg-background text-surface-light flex h-32 w-32 flex-col items-center justify-center rounded-lg border-3',
         isDragging
           ? 'border-primary-light cursor-grabbing shadow-2xl'
           : 'hover:border-primary cursor-grab border-transparent shadow-md',
       )}
     >
-      {Math.round(currentX)}, {Math.round(currentY)}
-      {/* <input
-        type="text"
-        placeholder="Focusable property text..."
-        className="border-surface bg-background text-body focus:border-primary w-full rounded border px-2 py-1 text-xs focus:outline-none"
-        onKeyDown={(e) => e.stopPropagation()}
-        onPointerDown={(e) => e.stopPropagation()}
-        onMouseDown={(e) => e.stopPropagation()}
-      /> */}
+      <p>{node.name}</p>
+      <p>
+        ({Math.round(currentX)}, {Math.round(currentY)})
+      </p>
     </div>
   );
 }
