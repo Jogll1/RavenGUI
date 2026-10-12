@@ -30,3 +30,13 @@
   /* --- Font --- */
   --font-default: 'Nunito', Arial;
 }
+
+@layer components {
+  .arrow-icon {
+    @apply text-surface-light -rotate-90 transform transition-transform duration-50;
+  }
+
+  details[open] > summary > .arrow-icon {
+    @apply rotate-0;
+  }
+}

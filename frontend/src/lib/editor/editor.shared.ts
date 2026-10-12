@@ -10,6 +10,10 @@ export function stateToValueSetter<T>(value: T, setter: React.Dispatch<React.Set
   };
 }
 
-export function getNodeByID(record: EditorNodeRecord, id: ID) {
-  return record[id] ?? null;
+export function getNodeByID(nodes: EditorNodeRecord, id: ID) {
+  return nodes[id] ?? null;
+}
+
+export function getNodesByID(nodes: EditorNodeRecord, ids: ID[] | undefined) {
+  return (ids ?? []).map((child) => getNodeByID(nodes, child));
 }

@@ -19,25 +19,38 @@ const rootNode: EditorNode = {
 export default function Home() {
   // Editor environment variables
   const [nodes, setNodes] = useState<EditorNodeRecord>({
-    '#root': rootNode,
     '#box1': {
       id: '#box1',
       name: 'Box 1',
-      x: 100,
-      y: 100,
+      x: 0,
+      y: 0,
       children: ['#box3'],
     },
     '#box2': {
       id: '#box2',
       name: 'Box 2',
-      x: 200,
-      y: 200,
+      x: 128,
+      y: 128,
+      children: ['#box5'],
     },
     '#box3': {
       id: '#box3',
       name: 'Box 3',
-      x: 300,
-      y: 300,
+      x: 256,
+      y: 256,
+      children: ['#box4'],
+    },
+    '#box4': {
+      id: '#box4',
+      name: 'Box 4',
+      x: 384,
+      y: 384,
+    },
+    '#box5': {
+      id: '#box5',
+      name: 'Box 5',
+      x: 512,
+      y: 512,
     },
   });
 
@@ -49,7 +62,7 @@ export default function Home() {
   // Create environment
   const environment: Environment = {
     nodes: stateToValueSetter(nodes, setNodes),
-    root: rootNode.id,
+    root: rootNode,
     selected: stateToValueSetter(selected, setSelected),
 
     xTargetResolution: stateToValueSetter(xTargetResolution, setXTargetResolution),

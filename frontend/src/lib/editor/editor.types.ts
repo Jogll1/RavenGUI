@@ -14,7 +14,7 @@ export type EditorNodeRecord = Record<ID, EditorNode>;
 
 export interface Environment {
   nodes: ValueSetter<EditorNodeRecord>;
-  root: ID;
+  root: EditorNode;
   selected: ValueSetter<ID | null>;
 
   xTargetResolution: ValueSetter<number>;
