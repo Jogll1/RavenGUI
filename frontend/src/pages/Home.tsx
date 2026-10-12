@@ -13,12 +13,32 @@ const rootNode: EditorNode = {
   name: 'Root',
   x: 0,
   y: 0,
+  children: ['#box1', '#box2'],
 };
 
 export default function Home() {
   // Editor environment variables
   const [nodes, setNodes] = useState<EditorNodeRecord>({
     '#root': rootNode,
+    '#box1': {
+      id: '#box1',
+      name: 'Box 1',
+      x: 100,
+      y: 100,
+      children: ['#box3'],
+    },
+    '#box2': {
+      id: '#box2',
+      name: 'Box 2',
+      x: 200,
+      y: 200,
+    },
+    '#box3': {
+      id: '#box3',
+      name: 'Box 3',
+      x: 300,
+      y: 300,
+    },
   });
 
   const [selected, setSelected] = useState<ID | null>(null);

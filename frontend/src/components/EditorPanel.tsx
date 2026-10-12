@@ -10,13 +10,13 @@ export default function EditorPanel({ className, children, title, contentClassNa
   return (
     <Panel
       className={cn(
-        'bg-surface-dark border-background flex h-full flex-col rounded-md border-r-3 border-b-3 border-l-3',
+        'bg-surface-dark border-background z-10 flex h-full flex-col rounded-md border-r-3 border-b-3 border-l-3',
         className,
       )}
       {...rest}
     >
       {title && <h1 className="text-muted px-3 pt-2 pb-1 text-sm font-bold">{title}</h1>}
-      <div className={cn('bg-background m-1 h-full', contentClassName)}>{children}</div>
+      <div className={cn('bg-background m-1 h-full overflow-clip', contentClassName)}>{children}</div>
     </Panel>
   );
 }

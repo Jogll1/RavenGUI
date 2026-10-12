@@ -8,6 +8,8 @@ import { cn } from '../../lib/utils';
 // TODO:
 // - Small movements with arrow keys
 
+const MOVE_STEP = 4;
+
 interface CanvasNodeProps {
   node: EditorNode;
   transformRef: React.RefObject<Transform>;
@@ -56,9 +58,8 @@ export default function CanvasNode({ node, transformRef, onDragComplete }: Canva
     });
   }, [node.id, onDragComplete, transformRef]);
 
-  const step = 4;
-  const currentX = Math.ceil((node.x + dragOffset.x) / step) * step;
-  const currentY = Math.ceil((node.y + dragOffset.y) / step) * step;
+  const currentX = Math.ceil((node.x + dragOffset.x) / MOVE_STEP) * MOVE_STEP;
+  const currentY = Math.ceil((node.y + dragOffset.y) / MOVE_STEP) * MOVE_STEP;
 
   const style: React.CSSProperties = {
     position: 'absolute',
@@ -73,7 +74,7 @@ export default function CanvasNode({ node, transformRef, onDragComplete }: Canva
       ref={elementRef}
       style={style}
       className={cn(
-        'bg-background text-surface-light flex h-32 w-32 flex-col items-center justify-center rounded-lg border-3',
+        'bg-background text-surface-light flex h-32 w-32 flex-col items-center justify-center border-3',
         isDragging
           ? 'border-primary-light cursor-grabbing shadow-2xl'
           : 'hover:border-primary cursor-grab border-transparent shadow-md',
