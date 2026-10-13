@@ -1,12 +1,21 @@
 import { Panel } from 'react-resizable-panels';
 import { cn } from '../lib/utils';
+import { type ElementType } from 'react';
 
 export interface EditorPanelProps extends React.ComponentProps<typeof Panel> {
   title?: string;
   contentClassName?: string;
+  Toolbar?: ElementType;
 }
 
-export default function EditorPanel({ className, children, title, contentClassName, ...rest }: EditorPanelProps) {
+export default function EditorPanel({
+  className,
+  children,
+  title,
+  contentClassName,
+  Toolbar,
+  ...rest
+}: EditorPanelProps) {
   return (
     <Panel
       className={cn(
@@ -16,6 +25,7 @@ export default function EditorPanel({ className, children, title, contentClassNa
       {...rest}
     >
       {title && <h1 className="text-muted px-3 pt-2 pb-1 text-sm font-bold">{title}</h1>}
+      {Toolbar && <Toolbar />}
       <div className={cn('bg-background m-1 h-full overflow-clip', contentClassName)}>{children}</div>
     </Panel>
   );
