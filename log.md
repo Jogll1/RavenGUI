@@ -9,3 +9,14 @@
 - Started on canvas
 - Added pannable and zoomable canvas
 - Added draggable nodes
+
+12/10/26
+
+- Added aspect ratio target
+- Added scene tree viewer
+- Added environment variables
+
+13/10/26
+
+- Added KeyboardShortcutProvider
+- Added way to generate nodes using a hook

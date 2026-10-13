@@ -1,11 +1,8 @@
-# README
+# RavenGUI
 
 ## About
 
-This is the official Wails React-TS template.
-
-You can configure the project by editing `wails.json`. More information about the project settings can be found
-here: https://wails.io/docs/reference/project-config
+RavenGUI is a framework-agnostic editor that focuses on creating responsive, accessible, consistent GUIs.
 
 ## Live Development
 

@@ -1,3 +1,5 @@
+import { Setter } from '../types';
+
 export interface Transform {
   x: number;
   y: number;
@@ -5,8 +7,8 @@ export interface Transform {
 }
 
 export interface ValueSetter<T> {
-  value: T;
-  setter: React.Dispatch<React.SetStateAction<T>>;
+  readonly value: T;
+  setter: Setter<T>;
 }
 
 // Could add a getter to this?
@@ -14,14 +16,13 @@ export type EditorNodeRecord = Record<ID, EditorNode>;
 
 export interface Environment {
   nodes: ValueSetter<EditorNodeRecord>;
-  root: EditorNode;
   selected: ValueSetter<ID | null>;
 
   xTargetResolution: ValueSetter<number>;
   yTargetResolution: ValueSetter<number>;
 }
 
-export type ID = string;
+export type ID = `#${string}`;
 
 export interface EditorNodeStyles {
   width: string;
@@ -34,6 +35,7 @@ export interface EditorNode {
   x: number;
   y: number;
   name: string;
+  type: 'root' | 'base';
   children?: ID[];
   styles?: EditorNodeStyles;
 }

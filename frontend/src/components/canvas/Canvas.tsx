@@ -5,6 +5,7 @@ import { zoom, ZoomTransform } from 'd3-zoom';
 import { type Transform, type Environment, type EditorNodeRecord } from '../../lib/editor/editor.types';
 import CanvasNode from './CanvasNode';
 import CanvasInfoBar from './CanvasInfoBar';
+import { ROOT_ID } from '../../lib/editor/editor.shared';
 
 // Goals
 // - Select: Left click drag
@@ -141,9 +142,13 @@ export default function Canvas({ environment }: { environment: Environment }) {
         ></div>
         {/* Nodes */}
         <div ref={viewportRef} className="relative inset-0 origin-top-left will-change-transform">
-          {Object.values(nodes).map((node) => (
-            <CanvasNode key={node.id} node={node} transformRef={transformRef} onDragComplete={updateNodePosition} />
-          ))}
+          {Object.values(nodes).map((node) => {
+            if (node.id !== ROOT_ID) {
+              return (
+                <CanvasNode key={node.id} node={node} transformRef={transformRef} onDragComplete={updateNodePosition} />
+              );
+            }
+          })}
         </div>
       </div>
     </div>
