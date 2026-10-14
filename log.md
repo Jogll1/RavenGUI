@@ -23,4 +23,5 @@
 
 14/10/26
 
--
+- Added selecting nodes via the scene tree
+- Worked on inspector

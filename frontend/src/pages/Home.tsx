@@ -45,7 +45,6 @@ export default function Home() {
 
   useEffect(() => {
     const createNode = () => handleCreateNode();
-
     const shortcut: Shortcut = { key: 'a', modifiers: ['Ctrl'] };
 
     register(shortcut, createNode);
@@ -58,7 +57,7 @@ export default function Home() {
       <Group className="mb-1 flex h-full min-w-screen flex-row">
         <SceneTree environment={environment} />
         <Workspace environment={environment} />
-        <Inspector />
+        <Inspector environment={environment} />
       </Group>
     </main>
   );

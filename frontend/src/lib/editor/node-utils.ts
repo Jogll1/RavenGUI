@@ -1,3 +1,4 @@
+import type { Setter } from '../types';
 import { ROOT_ID } from './editor.shared';
 import type { EditorNode, EditorNodeRecord, ID } from './editor.types';
 
@@ -20,7 +21,7 @@ export function getRootNode(nodes: EditorNodeRecord) {
 }
 
 export function createBaseNode(id?: ID, name?: string, parentID?: ID) {
-  // TODO: put in state
+  // TODO: put in state?
   nodeCounter++;
 
   const validNodeID: ID = id ?? getNextID();
@@ -36,4 +37,23 @@ export function createBaseNode(id?: ID, name?: string, parentID?: ID) {
   };
 
   return { node, validParentID };
+}
+
+export function updateNodePosition(setNodes: Setter<EditorNodeRecord>, id: string, newX: number, newY: number) {
+  setNodes((prev) => {
+    const updated = Object.entries(prev).map(([key, node]) => {
+      return [
+        key,
+        key === id
+          ? {
+              ...node,
+              x: newX,
+              y: newY,
+            }
+          : node,
+      ];
+    });
+
+    return Object.fromEntries(updated) as EditorNodeRecord;
+  });
 }

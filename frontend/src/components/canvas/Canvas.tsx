@@ -5,7 +5,9 @@ import { zoom, ZoomTransform } from 'd3-zoom';
 import { type Transform, type Environment, type EditorNodeRecord } from '../../lib/editor/editor.types';
 import CanvasNode from './CanvasNode';
 import CanvasInfoBar from './CanvasInfoBar';
-import { ROOT_ID } from '../../lib/editor/editor.shared';
+import { DEFAULT_TARGET_X, DEFAULT_TARGET_Y, ROOT_ID } from '../../lib/editor/editor.shared';
+import useShortcuts from '../../lib/hooks/useShortcuts';
+import { Shortcut } from '../../lib/shortcuts';
 
 // Goals
 // - Select: Left click drag
@@ -35,6 +37,8 @@ function isMouseWheel(event: any) {
 }
 
 export default function Canvas({ environment }: { environment: Environment }) {
+  const { register, unregister } = useShortcuts();
+
   // Store nodes
   const [nodes, setNodes] = [environment.nodes.value, environment.nodes.setter];
 
@@ -99,7 +103,7 @@ export default function Canvas({ environment }: { environment: Environment }) {
   }, []);
 
   // Handle position updates upon drop completion
-  const updateNodePosition = (id: string, deltaX: number, deltaY: number) => {
+  const updateNodePosition = (id: string, newX: number, newY: number) => {
     setNodes((prev) => {
       const updated = Object.entries(prev).map(([key, node]) => {
         return [
@@ -107,8 +111,8 @@ export default function Canvas({ environment }: { environment: Environment }) {
           key === id
             ? {
                 ...node,
-                x: node.x + deltaX / transformRef.current.scale,
-                y: node.y + deltaY / transformRef.current.scale,
+                x: newX,
+                y: newY,
               }
             : node,
         ];
@@ -117,6 +121,18 @@ export default function Canvas({ environment }: { environment: Environment }) {
       return Object.fromEntries(updated) as EditorNodeRecord;
     });
   };
+
+  // Register Ctrl+R to reset the target aspect
+  useEffect(() => {
+    const resizeTargetOutline = () => {
+      environment.xTargetResolution.setter(DEFAULT_TARGET_X);
+      environment.yTargetResolution.setter(DEFAULT_TARGET_Y);
+    };
+    const shortcut: Shortcut = { key: 'r', modifiers: ['Ctrl'] };
+
+    register(shortcut, resizeTargetOutline);
+    return () => unregister(shortcut);
+  });
 
   return (
     <div className="text-body relative flex size-full flex-col overflow-hidden bg-[#09090C] select-none">
@@ -139,7 +155,7 @@ export default function Canvas({ environment }: { environment: Environment }) {
             top: `${transform.y}px`,
             left: `${transform.x}px`,
           }}
-        ></div>
+        />
         {/* Nodes */}
         <div ref={viewportRef} className="relative inset-0 origin-top-left will-change-transform">
           {Object.values(nodes).map((node) => {
