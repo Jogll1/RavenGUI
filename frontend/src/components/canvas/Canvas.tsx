@@ -50,6 +50,11 @@ export default function Canvas({ environment }: { environment: Environment }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
 
+  // Deselect nodes when canvas clicked
+  const handleOnClick = () => {
+    environment.selected.setter(null);
+  };
+
   // Set-up D3 pan and zoom
   useEffect(() => {
     const container = containerRef.current;
@@ -145,6 +150,10 @@ export default function Canvas({ environment }: { environment: Environment }) {
           backgroundSize: `${48 * transform.scale}px ${48 * transform.scale}px`,
           backgroundPosition: `${transform.x}px ${transform.y}px`,
         }}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleOnClick();
+        }}
       >
         {/* Aspect target outline */}
         <div
@@ -161,7 +170,13 @@ export default function Canvas({ environment }: { environment: Environment }) {
           {Object.values(nodes).map((node) => {
             if (node.id !== ROOT_ID) {
               return (
-                <CanvasNode key={node.id} node={node} transformRef={transformRef} onDragComplete={updateNodePosition} />
+                <CanvasNode
+                  key={node.id}
+                  node={node}
+                  transformRef={transformRef}
+                  selectedNode={environment.selected}
+                  onDragComplete={updateNodePosition}
+                />
               );
             }
           })}

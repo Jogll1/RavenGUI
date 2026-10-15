@@ -1,9 +1,8 @@
 import { ROOT_ID } from '../lib/editor/editor.shared';
-import type { EditorNodeRecord, EditorNode, Environment, ID } from '../lib/editor/editor.types';
+import type { EditorNodeRecord, EditorNode, Environment, ID, ValueSetter } from '../lib/editor/editor.types';
 import { cn, ev } from '../lib/utils';
 import EditorPanel from './EditorPanel';
-import type { Setter } from '../lib/types';
-import { getNodesByID, getRootNode } from '../lib/editor/node-utils';
+import { getNodeByID, getNodesByID, getRootNode } from '../lib/editor/node-utils';
 import { useState } from 'react';
 import { NodeIcon } from './canvas/CanvasNode';
 
@@ -43,11 +42,11 @@ function ArrowButton() {
 interface SceneTreeEntryProps {
   nodes: EditorNodeRecord;
   node: EditorNode;
-  selectedNodeSetter: Setter<ID | null>;
+  selectedNode: ValueSetter<ID | null>;
 }
 
-function SceneTreeEntry({ nodes, node, selectedNodeSetter }: SceneTreeEntryProps) {
-  const [selected, setSelected] = useState(false);
+function SceneTreeEntry({ nodes, node, selectedNode }: SceneTreeEntryProps) {
+  const selected = selectedNode !== null && selectedNode.value === node.id;
 
   const nodeChildren = getNodesByID(nodes, node.children);
   const hasChildren = nodeChildren.length > 0;
@@ -56,8 +55,7 @@ function SceneTreeEntry({ nodes, node, selectedNodeSetter }: SceneTreeEntryProps
   const TitleElement = hasChildren ? 'summary' : Title;
 
   const handleOnClick = () => {
-    selectedNodeSetter(node.id);
-    setSelected(true);
+    selectedNode.setter(node.id);
   };
 
   return (
@@ -68,7 +66,10 @@ function SceneTreeEntry({ nodes, node, selectedNodeSetter }: SceneTreeEntryProps
           ev(selected, 'bg-primary-light text-heading', 'hover:bg-primary-dark hover:text-heading'),
           ev(hasChildren, 'cursor-pointer'),
         )}
-        onClick={handleOnClick}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleOnClick();
+        }}
       >
         {hasChildren && <ArrowButton />}
         <NodeIcon node={node} />
@@ -78,7 +79,7 @@ function SceneTreeEntry({ nodes, node, selectedNodeSetter }: SceneTreeEntryProps
         <div className="ml-3 flex flex-col">
           {nodeChildren.map((child) => (
             <div key={child.id}>
-              <SceneTreeEntry nodes={nodes} node={child} selectedNodeSetter={selectedNodeSetter} />
+              <SceneTreeEntry nodes={nodes} node={child} selectedNode={selectedNode} />
             </div>
           ))}
         </div>
@@ -92,9 +93,13 @@ export default function SceneTree({ environment }: { environment: Environment })
   const root = getRootNode(environment.nodes.value);
   const rootChildren = getNodesByID(environment.nodes.value, root.children);
 
+  const handleOnClick = () => {
+    environment.selected.setter(null);
+  };
+
   return (
     <EditorPanel title="Scene" minSize={100} defaultSize="15%">
-      <div className="flex size-full flex-col overflow-auto p-2">
+      <div className="flex size-full flex-col overflow-auto p-2" onClick={handleOnClick}>
         {rootChildren.map((child) => {
           if (child.id !== ROOT_ID) {
             return (
@@ -102,7 +107,7 @@ export default function SceneTree({ environment }: { environment: Environment })
                 key={child.id}
                 nodes={environment.nodes.value}
                 node={child}
-                selectedNodeSetter={environment.selected.setter}
+                selectedNode={environment.selected}
               />
             );
           }

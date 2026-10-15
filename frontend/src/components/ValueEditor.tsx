@@ -1,8 +1,9 @@
+import type { BasicValueSetter } from '../lib/editor/editor.types';
 import { cn } from '../lib/utils';
 
 interface NumericInputProps {
   name: string;
-  valueSetter: { value: number; setter: (value: number) => void };
+  valueSetter: BasicValueSetter<number>;
   integerOnly?: boolean;
   unit?: string;
   className?: string;

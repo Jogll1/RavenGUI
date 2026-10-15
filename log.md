@@ -23,5 +23,10 @@
 
 14/10/26
 
-- Added selecting nodes via the scene tree
+- Added selecting nodes from the scene tree
 - Worked on inspector
+
+15/10/26
+
+- Added deselecting nodes
+- Added selecting nodes from the canvas

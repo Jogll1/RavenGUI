@@ -3,8 +3,8 @@ import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { disableNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/disable-native-drag-preview';
 import { FaRegCircle } from 'react-icons/fa6';
 
-import type { Transform, EditorNode } from '../../lib/editor/editor.types';
-import { cn } from '../../lib/utils';
+import type { Transform, EditorNode, ValueSetter, ID } from '../../lib/editor/editor.types';
+import { cn, ev } from '../../lib/utils';
 
 // TODO:
 // - Small movements with arrow keys
@@ -29,14 +29,21 @@ export function NodeIcon({ node }: { node: EditorNode }) {
 interface CanvasNodeProps {
   node: EditorNode;
   transformRef: React.RefObject<Transform>;
+  selectedNode: ValueSetter<ID | null>;
   onDragComplete: (id: string, deltaX: number, deltaY: number) => void;
 }
 
-export default function CanvasNode({ node, transformRef, onDragComplete }: CanvasNodeProps) {
+export default function CanvasNode({ node, transformRef, selectedNode, onDragComplete }: CanvasNodeProps) {
+  const selected = selectedNode !== null && selectedNode.value === node.id;
+
   const elementRef = useRef<HTMLDivElement>(null);
 
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+
+  const selectThis = () => {
+    selectedNode.setter(node.id);
+  };
 
   useEffect(() => {
     const el = elementRef.current;
@@ -48,6 +55,7 @@ export default function CanvasNode({ node, transformRef, onDragComplete }: Canva
         disableNativeDragPreview({ nativeSetDragImage });
       },
       onDragStart() {
+        selectThis();
         setIsDragging(true);
       },
       onDrag({ location }) {
@@ -86,10 +94,13 @@ export default function CanvasNode({ node, transformRef, onDragComplete }: Canva
       }}
       className={cn(
         'bg-background text-surface-light absolute top-0 left-0 flex h-32 w-32 flex-col items-center justify-center border-3',
-        isDragging
-          ? 'border-primary-light z-100 cursor-grabbing shadow-2xl'
-          : 'hover:border-primary z-10 cursor-grab border-transparent shadow-md',
+        ev(isDragging, 'z-100 cursor-grabbing shadow-2xl', 'z-10 cursor-grab shadow-md'),
+        ev(selected, 'border-primary-light', 'hover:border-primary border-transparent'),
       )}
+      onClick={(e) => {
+        e.stopPropagation();
+        selectThis();
+      }}
     >
       <p>{node.name}</p>
       <p>

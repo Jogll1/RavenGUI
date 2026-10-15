@@ -1,11 +1,11 @@
-import type { Environment } from '../lib/editor/editor.types';
+import type { BasicValueSetter, Environment } from '../lib/editor/editor.types';
 import { getNodeByID, updateNodePosition } from '../lib/editor/node-utils';
 import { NodeIcon } from './canvas/CanvasNode';
 import EditorPanel from './EditorPanel';
 import { NumericValueEditor } from './ValueEditor';
 
 interface Item<T> {
-  valueSetter: { value: T; setter: (value: T) => void };
+  valueSetter: BasicValueSetter<T>;
   name: string;
 }
 

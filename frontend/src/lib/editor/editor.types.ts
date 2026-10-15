@@ -11,6 +11,11 @@ export interface ValueSetter<T> {
   setter: Setter<T>;
 }
 
+export interface BasicValueSetter<T> {
+  readonly value: T;
+  setter: (value: T) => void;
+}
+
 // Could add a getter to this?
 export type EditorNodeRecord = Record<ID, EditorNode>;
 
