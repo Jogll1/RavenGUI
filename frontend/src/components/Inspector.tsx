@@ -29,13 +29,15 @@ export default function Inspector({ environment }: { environment: Environment })
   const selected = environment.selected.value ? getNodeByID(nodes, environment.selected.value) : null;
 
   return (
-    <EditorPanel title="Inspector" minSize={100} defaultSize="15%">
+    <EditorPanel title="Inspector" minSize={100} defaultSize="15%" collapsible>
       {selected && (
         <div className="flex size-full flex-col gap-2 overflow-auto p-2">
           <div className="border-surface flex flex-row items-center gap-1 border-b-4 pb-1">
             <NodeIcon node={selected} />
             <h1>{selected.name}</h1>
+            <h1>({selected.id})</h1>
           </div>
+          {/* Position */}
           <div className="grid w-full grid-cols-2">
             <p>Position</p>
             <PairEditor

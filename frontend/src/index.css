@@ -37,7 +37,7 @@
     @apply text-surface-light -rotate-90 transform transition-transform duration-50;
   }
 
-  details[open] > summary > .arrow-icon {
+  details[open] > summary > span > .arrow-icon {
     @apply rotate-0;
   }
 }

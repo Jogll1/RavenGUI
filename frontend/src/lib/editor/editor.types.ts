@@ -41,6 +41,6 @@ export interface EditorNode {
   y: number;
   name: string;
   type: 'root' | 'base';
-  children?: ID[];
+  children: ID[];
   styles?: EditorNodeStyles;
 }

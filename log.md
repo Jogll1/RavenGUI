@@ -30,3 +30,8 @@
 
 - Added deselecting nodes
 - Added selecting nodes from the canvas
+
+16/10/26
+
+- Added re-parenting nodes
+- Fixed tree selecting and positioning

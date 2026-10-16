@@ -8,7 +8,7 @@ import SceneTree from '../components/SceneTree';
 import Inspector from '../components/Inspector';
 import { useHandleCreateNode } from '../lib/hooks/useHandleCreateNode';
 import useShortcuts from '../lib/hooks/useShortcuts';
-import { Shortcut } from '../lib/shortcuts';
+import { Shortcut } from '../lib/shortcuts.types';
 
 const rootNode: EditorNode = {
   id: ROOT_ID,
@@ -16,6 +16,7 @@ const rootNode: EditorNode = {
   x: 0,
   y: 0,
   type: 'root',
+  children: [],
 };
 
 export default function Home() {
@@ -42,11 +43,11 @@ export default function Home() {
 
   // Register Ctrl+A to create a new node
   const { handleCreateNode } = useHandleCreateNode(setNodes);
+  const createNode = () => handleCreateNode();
+
+  const shortcut: Shortcut = { key: 'a', modifiers: ['Ctrl'] };
 
   useEffect(() => {
-    const createNode = () => handleCreateNode();
-    const shortcut: Shortcut = { key: 'a', modifiers: ['Ctrl'] };
-
     register(shortcut, createNode);
     return () => unregister(shortcut);
   });

@@ -4,6 +4,12 @@
 
 RavenGUI is a framework-agnostic editor that focuses on creating responsive, accessible, consistent GUIs.
 
+## Dependencies
+
+- Wails
+- TypeScript
+- React
+
 ## Live Development
 
 To run in live development mode, run `wails dev` in the project directory. This will run a Vite development

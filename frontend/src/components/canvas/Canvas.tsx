@@ -7,7 +7,7 @@ import CanvasNode from './CanvasNode';
 import CanvasInfoBar from './CanvasInfoBar';
 import { DEFAULT_TARGET_X, DEFAULT_TARGET_Y, ROOT_ID } from '../../lib/editor/editor.shared';
 import useShortcuts from '../../lib/hooks/useShortcuts';
-import { Shortcut } from '../../lib/shortcuts';
+import { Shortcut } from '../../lib/shortcuts.types';
 
 // Goals
 // - Select: Left click drag

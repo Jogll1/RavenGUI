@@ -8,8 +8,8 @@ export function useHandleCreateNode(nodeRecordSetter: Setter<EditorNodeRecord>) 
     (id?: ID, name?: string, parentID?: ID) => {
       const { node, validParentID } = createBaseNode(id, name, parentID);
 
-      nodeRecordSetter((prevRecord) => {
-        const nextRecord = { ...prevRecord };
+      nodeRecordSetter((prev) => {
+        const nextRecord = { ...prev };
 
         nextRecord[node.id] = node;
 

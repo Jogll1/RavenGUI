@@ -1,4 +1,4 @@
-import type { ID, ValueSetter } from './editor.types';
+import type { EditorNode, ID, ValueSetter } from './editor.types';
 
 export const DEFAULT_TARGET_X = 1920;
 export const DEFAULT_TARGET_Y = 1080;
@@ -10,4 +10,16 @@ export function stateToValueSetter<T>(value: T, setter: React.Dispatch<React.Set
     value,
     setter,
   };
+}
+
+export function isEditorNode(value: unknown): value is EditorNode {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  if (!('id' in value) || typeof value.id !== 'string') {
+    return false;
+  }
+
+  return value.id.startsWith('#');
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { disableNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/disable-native-drag-preview';
 import { FaRegCircle } from 'react-icons/fa6';
@@ -41,9 +41,9 @@ export default function CanvasNode({ node, transformRef, selectedNode, onDragCom
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
-  const selectThis = () => {
+  const selectThis = useCallback(() => {
     selectedNode.setter(node.id);
-  };
+  }, [selectedNode, node]);
 
   useEffect(() => {
     const el = elementRef.current;
@@ -82,7 +82,7 @@ export default function CanvasNode({ node, transformRef, selectedNode, onDragCom
         setDragOffset({ x: 0, y: 0 });
       },
     });
-  }, [node.id, onDragComplete, transformRef, dragOffset, node.x, node.y]);
+  }, [node.id, onDragComplete, transformRef, dragOffset, node.x, node.y, selectThis]);
 
   const { newX, newY } = getNewCoords(node.x, node.y, dragOffset.x, dragOffset.y);
 

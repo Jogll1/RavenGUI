@@ -1,7 +1,7 @@
 // Adapted from https://dev.to/lalitkhu/implement-keyboard-shortcuts-in-your-react-app-475c
 
 import React, { createContext, useCallback, useEffect, useRef } from 'react';
-import { Modifier, Shortcut, ShortcutHandler, ShortcutRegistry, ShortcutsContextType } from '../lib/shortcuts';
+import { Modifier, Shortcut, ShortcutHandler, ShortcutRegistry, ShortcutsContextType } from '../lib/shortcuts.types';
 
 export const ShortcutsContext = createContext<ShortcutsContextType>({
   register: () => {},
