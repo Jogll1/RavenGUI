@@ -35,3 +35,7 @@
 
 - Added re-parenting nodes
 - Fixed tree selecting and positioning
+
+19/10/26
+
+- Added re-parenting to scene root

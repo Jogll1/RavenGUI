@@ -6,7 +6,7 @@ import Workspace from '../components/Workspace';
 import type { EditorNodeRecord, EditorNode, Environment, ID } from '../lib/editor/editor.types';
 import SceneTree from '../components/SceneTree';
 import Inspector from '../components/Inspector';
-import { useHandleCreateNode } from '../lib/hooks/useHandleCreateNode';
+import useHandleCreateNode from '../lib/hooks/useHandleCreateNode';
 import useShortcuts from '../lib/hooks/useShortcuts';
 import { Shortcut } from '../lib/shortcuts.types';
 

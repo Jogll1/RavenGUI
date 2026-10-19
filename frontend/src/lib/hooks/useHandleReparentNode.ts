@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
 import type { EditorNodeRecord, ID, ValueSetter } from '../editor/editor.types';
-import { getNodeByID } from '../editor/node-utils';
+import { canParent } from '../editor/node-utils';
 
-export function useHandleReparentNode(nodeRecord: ValueSetter<EditorNodeRecord>) {
+export default function useHandleReparentNode(nodeRecord: ValueSetter<EditorNodeRecord>) {
   const handleReparentNode = useCallback(
     (id: ID, newParent: ID) => {
-      if (id === newParent || getNodeByID(nodeRecord.value, id).children.includes(newParent)) {
+      if (!canParent(nodeRecord.value, id, newParent)) {
         return;
       }
 

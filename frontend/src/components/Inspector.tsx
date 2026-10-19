@@ -35,7 +35,6 @@ export default function Inspector({ environment }: { environment: Environment })
           <div className="border-surface flex flex-row items-center gap-1 border-b-4 pb-1">
             <NodeIcon node={selected} />
             <h1>{selected.name}</h1>
-            <h1>({selected.id})</h1>
           </div>
           {/* Position */}
           <div className="grid w-full grid-cols-2">

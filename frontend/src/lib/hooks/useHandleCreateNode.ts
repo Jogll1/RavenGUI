@@ -3,7 +3,7 @@ import { Setter } from '../types';
 import { EditorNodeRecord, ID } from '../editor/editor.types';
 import { createBaseNode } from '../editor/node-utils';
 
-export function useHandleCreateNode(nodeRecordSetter: Setter<EditorNodeRecord>) {
+export default function useHandleCreateNode(nodeRecordSetter: Setter<EditorNodeRecord>) {
   const handleCreateNode = useCallback(
     (id?: ID, name?: string, parentID?: ID) => {
       const { node, validParentID } = createBaseNode(id, name, parentID);

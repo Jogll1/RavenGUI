@@ -1,12 +1,12 @@
-import { isEditorNode, ROOT_ID } from '../lib/editor/editor.shared';
+import { ROOT_ID } from '../lib/editor/editor.shared';
 import type { EditorNodeRecord, EditorNode, Environment, ID, ValueSetter } from '../lib/editor/editor.types';
 import { cn, ev } from '../lib/utils';
 import EditorPanel from './EditorPanel';
-import { getNodeByID, getNodesByID, getRootNode } from '../lib/editor/node-utils';
+import { getNodesByID, getRootNode } from '../lib/editor/node-utils';
 import { NodeIcon } from './canvas/CanvasNode';
-import { useEffect, useRef, useState } from 'react';
-import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
-import { useHandleReparentNode } from '../lib/hooks/useHandleReparentNode';
+import { useEffect } from 'react';
+import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+import useReparentDropTarget from '../lib/hooks/useReparentDropTarget';
 
 function Details({ children, className, ...rest }: React.ComponentProps<'details'>) {
   return (
@@ -53,6 +53,17 @@ function ArrowButton() {
   );
 }
 
+function RootDropZone({ nodes }: { nodes: ValueSetter<EditorNodeRecord> }) {
+  const { ref, hovered } = useReparentDropTarget(nodes);
+
+  return (
+    <div className="grid list-none grid-cols-[16px_1fr]">
+      <div></div>
+      <div className={cn('h-1 w-full py-0.5', ev(hovered, 'bg-primary-dark'))} ref={ref}></div>
+    </div>
+  );
+}
+
 interface SceneTreeEntryProps {
   nodes: ValueSetter<EditorNodeRecord>;
   node: EditorNode;
@@ -62,10 +73,7 @@ interface SceneTreeEntryProps {
 // TODO: lines | under nodes with children
 // TODO: un-parenting nodes and rearranging
 function SceneTreeEntry({ nodes, node, selectedNode }: SceneTreeEntryProps) {
-  const { handleReparentNode } = useHandleReparentNode(nodes);
-
-  const ref = useRef(null);
-  const [hovered, setHovered] = useState<boolean>(false);
+  const { ref, hovered } = useReparentDropTarget(nodes, node.id);
 
   const selected = selectedNode !== null && selectedNode.value === node.id;
 
@@ -88,41 +96,10 @@ function SceneTreeEntry({ nodes, node, selectedNode }: SceneTreeEntryProps) {
       element: el,
       getInitialData: () => ({ node }),
     });
-  }, [node]);
-
-  // Set up dropping
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    return dropTargetForElements({
-      element: el,
-      onDragEnter: ({ source }) => {
-        if (source.data.node && isEditorNode(source.data.node)) {
-          setHovered(true);
-        }
-      },
-      canDrop: ({ source }) => {
-        return (
-          !!source.data.node &&
-          isEditorNode(source.data.node) &&
-          source.data.node.id !== node.id &&
-          !getNodeByID(nodes.value, source.data.node.id).children.includes(node.id) &&
-          !getNodeByID(nodes.value, node.id).children.includes(source.data.node.id)
-        );
-      },
-      onDragLeave: () => setHovered(false),
-      onDrop: ({ source }) => {
-        setHovered(false);
-        if (source.data.node && isEditorNode(source.data.node)) {
-          handleReparentNode(source.data.node.id as ID, node.id);
-        }
-      },
-    });
-  }, [node.id, nodes, handleReparentNode]);
+  }, [ref, node]);
 
   return (
-    <NodeElement>
+    <NodeElement className="flex flex-col">
       <TitleElement
         className={cn('grid list-none grid-cols-[16px_1fr] items-center select-none')}
         onClick={(e) => {
@@ -172,6 +149,7 @@ export default function SceneTree({ environment }: { environment: Environment })
   return (
     <EditorPanel title="Scene" minSize={100} defaultSize="15%" collapsible>
       <div className="flex size-full flex-col overflow-auto p-2" onClick={handleOnClick}>
+        <RootDropZone nodes={environment.nodes} />
         {rootChildren.map((child) => {
           if (child.id !== ROOT_ID) {
             return (
