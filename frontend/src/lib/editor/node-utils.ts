@@ -1,11 +1,12 @@
 import type { Setter } from '../types';
+import { ev } from '../utils';
 import { ROOT_ID } from './editor.shared';
-import type { EditorNode, EditorNodeRecord, ID } from './editor.types';
+import type { EditorNode, EditorNodeRecord, EditorNodeType, ID } from './editor.types';
 
 var nodeCounter: number = 0;
 
-function getNextID(): ID {
-  return `#node${nodeCounter}`;
+function getNodeID(nodeType: EditorNodeType): ID {
+  return `#${nodeType}${nodeCounter}`;
 }
 
 export function getNodeByID(nodes: EditorNodeRecord, id: ID) {
@@ -51,15 +52,14 @@ export function canParent(nodes: EditorNodeRecord, id: ID, newParent: ID) {
 }
 
 export function createBaseNode(id?: ID, name?: string, parentID?: ID) {
-  // TODO: put in state?
   nodeCounter++;
 
-  const validNodeID: ID = id ?? getNextID();
+  const validNodeID: ID = id ?? getNodeID('base');
   const validParentID: ID = parentID ?? ROOT_ID;
 
   const node: EditorNode = {
     id: validNodeID,
-    name: name ?? 'Node',
+    name: name ?? `Node${ev(nodeCounter > 1, ' (' + nodeCounter + ')', '')}`,
     x: 0,
     y: 0,
     type: 'base',
@@ -69,16 +69,15 @@ export function createBaseNode(id?: ID, name?: string, parentID?: ID) {
   return { node, validParentID };
 }
 
-export function updateNodePosition(setNodes: Setter<EditorNodeRecord>, id: string, newX: number, newY: number) {
-  setNodes((prev) => {
+function updateNodeAttributes(nodesSetter: Setter<EditorNodeRecord>, id: string, newAttributes: Partial<EditorNode>) {
+  nodesSetter((prev) => {
     const updated = Object.entries(prev).map(([key, node]) => {
       return [
         key,
         key === id
           ? {
               ...node,
-              x: newX,
-              y: newY,
+              ...newAttributes,
             }
           : node,
       ];
@@ -86,4 +85,12 @@ export function updateNodePosition(setNodes: Setter<EditorNodeRecord>, id: strin
 
     return Object.fromEntries(updated) as EditorNodeRecord;
   });
+}
+
+export function updateNodePosition(nodesSetter: Setter<EditorNodeRecord>, id: string, newX: number, newY: number) {
+  updateNodeAttributes(nodesSetter, id, { x: newX, y: newY });
+}
+
+export function updateNodeName(nodesSetter: Setter<EditorNodeRecord>, id: string, newName: string) {
+  updateNodeAttributes(nodesSetter, id, { name: newName });
 }

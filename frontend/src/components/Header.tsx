@@ -17,14 +17,14 @@ export default function Header({ environment }: { environment: Environment }) {
         <nav className="bg-background text-muted flex items-center gap-1 px-4 py-2 text-sm">
           Target:
           <NumericValueEditor
-            name="x-input"
+            name="target-x-editor"
             integerOnly
             valueSetter={environment.xTargetResolution}
             className="max-w-12.5"
           />
           ×
           <NumericValueEditor
-            name="y-input"
+            name="target-y-editor"
             integerOnly
             valueSetter={environment.yTargetResolution}
             className="max-w-12.5"

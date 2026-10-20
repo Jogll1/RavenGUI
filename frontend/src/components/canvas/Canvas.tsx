@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { pointer, select } from 'd3-selection';
 import { zoom, ZoomTransform } from 'd3-zoom';
 
-import { type Transform, type Environment, type EditorNodeRecord } from '../../lib/editor/editor.types';
+import { type Transform, type Environment } from '../../lib/editor/editor.types';
 import CanvasNode from './CanvasNode';
 import CanvasInfoBar from './CanvasInfoBar';
 import { DEFAULT_TARGET_X, DEFAULT_TARGET_Y, ROOT_ID } from '../../lib/editor/editor.shared';
 import useShortcuts from '../../lib/hooks/useShortcuts';
 import { Shortcut } from '../../lib/shortcuts.types';
+import { updateNodePosition } from '../../lib/editor/node-utils';
 
 // Goals
 // - Select: Left click drag
@@ -107,26 +108,6 @@ export default function Canvas({ environment }: { environment: Environment }) {
     };
   }, []);
 
-  // Handle position updates upon drop completion
-  const updateNodePosition = (id: string, newX: number, newY: number) => {
-    setNodes((prev) => {
-      const updated = Object.entries(prev).map(([key, node]) => {
-        return [
-          key,
-          key === id
-            ? {
-                ...node,
-                x: newX,
-                y: newY,
-              }
-            : node,
-        ];
-      });
-
-      return Object.fromEntries(updated) as EditorNodeRecord;
-    });
-  };
-
   // Register Ctrl+R to reset the target aspect
   useEffect(() => {
     const resizeTargetOutline = () => {
@@ -175,7 +156,9 @@ export default function Canvas({ environment }: { environment: Environment }) {
                   node={node}
                   transformRef={transformRef}
                   selectedNode={environment.selected}
-                  onDragComplete={updateNodePosition}
+                  updateNodePosition={(id: string, newX: number, newY: number) => {
+                    updateNodePosition(setNodes, id, newX, newY);
+                  }}
                 />
               );
             }

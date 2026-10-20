@@ -9,6 +9,10 @@ import Inspector from '../components/Inspector';
 import useHandleCreateNode from '../lib/hooks/useHandleCreateNode';
 import useShortcuts from '../lib/hooks/useShortcuts';
 import { Shortcut } from '../lib/shortcuts.types';
+import useHandleDeleteNode from '../lib/hooks/useHandleDeleteNode';
+
+// TODO:
+// - Multiple select (replace selected with an array and only show inspector when size == 1)
 
 const rootNode: EditorNode = {
   id: ROOT_ID,
@@ -45,11 +49,23 @@ export default function Home() {
   const { handleCreateNode } = useHandleCreateNode(setNodes);
   const createNode = () => handleCreateNode();
 
-  const shortcut: Shortcut = { key: 'a', modifiers: ['Ctrl'] };
+  const newNodeShortcut: Shortcut = { key: 'a', modifiers: ['Ctrl'] };
 
+  // Register Delete to delete a selected node
+  const { handleDeleteNode } = useHandleDeleteNode(environment.nodes, setSelected);
+  const deleteNode = () => selected && handleDeleteNode(selected);
+
+  const deleteNodeShortcut: Shortcut = { key: 'delete' };
+
+  // Register keybinds
   useEffect(() => {
-    register(shortcut, createNode);
-    return () => unregister(shortcut);
+    register(newNodeShortcut, createNode);
+    register(deleteNodeShortcut, deleteNode);
+
+    return () => {
+      unregister(newNodeShortcut);
+      unregister(deleteNodeShortcut);
+    };
   });
 
   return (

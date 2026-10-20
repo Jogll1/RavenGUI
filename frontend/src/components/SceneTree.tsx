@@ -147,7 +147,7 @@ export default function SceneTree({ environment }: { environment: Environment })
   };
 
   return (
-    <EditorPanel title="Scene" minSize={100} defaultSize="15%" collapsible>
+    <EditorPanel title="Scene" minSize={200} defaultSize="15%" collapsible>
       <div className="flex size-full flex-col overflow-auto p-2" onClick={handleOnClick}>
         <RootDropZone nodes={environment.nodes} />
         {rootChildren.map((child) => {

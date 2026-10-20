@@ -35,12 +35,14 @@ export interface EditorNodeStyles {
   backgroundColor?: string;
 }
 
+export type EditorNodeType = 'root' | 'base';
+
 export interface EditorNode {
   id: ID;
   x: number;
   y: number;
   name: string;
-  type: 'root' | 'base';
+  type: EditorNodeType;
   children: ID[];
   styles?: EditorNodeStyles;
 }

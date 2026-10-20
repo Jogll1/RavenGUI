@@ -23,6 +23,8 @@ export function NodeIcon({ node }: { node: EditorNode }) {
   switch (node.type) {
     case 'base':
       return <FaRegCircle size={12} className="pb-0.5" />;
+    default:
+      return <></>;
   }
 }
 
@@ -30,10 +32,10 @@ interface CanvasNodeProps {
   node: EditorNode;
   transformRef: React.RefObject<Transform>;
   selectedNode: ValueSetter<ID | null>;
-  onDragComplete: (id: string, deltaX: number, deltaY: number) => void;
+  updateNodePosition: (id: string, newX: number, newY: number) => void;
 }
 
-export default function CanvasNode({ node, transformRef, selectedNode, onDragComplete }: CanvasNodeProps) {
+export default function CanvasNode({ node, transformRef, selectedNode, updateNodePosition }: CanvasNodeProps) {
   const selected = selectedNode !== null && selectedNode.value === node.id;
 
   const elementRef = useRef<HTMLDivElement>(null);
@@ -75,14 +77,14 @@ export default function CanvasNode({ node, transformRef, selectedNode, onDragCom
         if (x !== 0 || y !== 0) {
           const { newX, newY } = getNewCoords(node.x, node.y, x, y);
 
-          onDragComplete(node.id, newX, newY);
+          updateNodePosition(node.id, newX, newY);
         }
 
         setIsDragging(false);
         setDragOffset({ x: 0, y: 0 });
       },
     });
-  }, [node.id, onDragComplete, transformRef, dragOffset, node.x, node.y, selectThis]);
+  }, [node.id, updateNodePosition, transformRef, dragOffset, node.x, node.y, selectThis]);
 
   const { newX, newY } = getNewCoords(node.x, node.y, dragOffset.x, dragOffset.y);
 
@@ -93,8 +95,8 @@ export default function CanvasNode({ node, transformRef, selectedNode, onDragCom
         transform: `translate(${newX}px, ${newY}px)`,
       }}
       className={cn(
-        'bg-background text-surface-light absolute top-0 left-0 flex h-32 w-32 flex-col items-center justify-center border-3',
-        ev(isDragging, 'z-100 cursor-grabbing shadow-2xl', 'z-10 cursor-grab shadow-md'),
+        'bg-background text-surface-light absolute top-0 left-0 z-10 flex h-32 w-32 flex-col items-center justify-center border-3',
+        ev(isDragging, 'cursor-grabbing shadow-2xl', 'cursor-grab shadow-md'),
         ev(selected, 'border-primary-light', 'hover:border-primary border-transparent'),
       )}
       onClick={(e) => {

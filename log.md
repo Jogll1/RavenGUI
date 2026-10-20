@@ -39,3 +39,8 @@
 19/10/26
 
 - Added re-parenting to scene root
+
+20/10/26
+
+- Added re-naming nodes
+- Added deleting nodes
