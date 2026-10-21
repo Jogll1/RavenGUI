@@ -100,7 +100,7 @@ function updateNodeStyles(nodesSetter: Setter<EditorNodeRecord>, id: string, new
         key === id
           ? {
               ...node,
-              styles: { ...newStyles },
+              styles: { ...node.styles, ...newStyles },
             }
           : node,
       ];

@@ -50,3 +50,4 @@
 - Added resizing nodes through inspector
 - Added keybinds file
 - Refactored integer value editor to allow negatives
+- Added changing node colour

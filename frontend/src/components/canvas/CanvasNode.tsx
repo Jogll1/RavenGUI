@@ -95,7 +95,7 @@ export default function CanvasNode({ node, transformRef, selectedNode, updateNod
         transform: `translate(${newX}px, ${newY}px)`,
         width: `${node.styles.width}px`,
         height: `${node.styles.height}px`,
-        backgroundColor: `#${node.styles.backgroundColor ?? '181921'}`,
+        backgroundColor: `#${node.styles.backgroundColor ?? 'ffffff'}`,
       }}
       className={cn(
         'text-surface-light absolute top-0 left-0 z-10 flex h-32 w-32 flex-col items-center justify-center border-3',

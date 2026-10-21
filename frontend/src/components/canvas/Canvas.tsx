@@ -120,7 +120,7 @@ export default function Canvas({ environment }: { environment: Environment }) {
   });
 
   return (
-    <div className="text-body bg-background-dark relative flex size-full flex-col overflow-hidden select-none">
+    <div className="text-body relative flex size-full flex-col overflow-hidden bg-[#090909] select-none">
       <CanvasInfoBar transform={transform} />
 
       <div

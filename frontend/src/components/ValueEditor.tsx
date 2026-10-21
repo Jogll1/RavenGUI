@@ -51,10 +51,10 @@ interface NumericInputProps extends InputProps<number> {
 }
 
 export function NumericValueEditor({ name, valueSetter, unit, min, max, ...rest }: NumericInputProps) {
-  const [inputValue, setInputValue] = useState<string>(valueSetter.value.toString());
+  const [inputValue, setInputValue] = useState<string>(String(valueSetter.value));
   const lastSyncValue = useRef<number>(valueSetter.value);
 
-  // Sync
+  // Sync valueSetter.value
   useEffect(() => {
     if (valueSetter.value !== lastSyncValue.current) {
       setInputValue(String(valueSetter.value));
@@ -99,9 +99,10 @@ export function NumericValueEditor({ name, valueSetter, unit, min, max, ...rest 
 
   const handleBlur = () => {
     if (inputValue === '' || inputValue === '-') {
-      setInputValue(String(0));
-      lastSyncValue.current = 0;
-      valueSetter.setter(0);
+      const fallback = min ?? 0;
+      setInputValue(String(fallback));
+      lastSyncValue.current = fallback;
+      valueSetter.setter(fallback);
     } else {
       setInputValue(String(valueSetter.value));
     }
@@ -130,9 +131,39 @@ export function StringValueEditor({ name, valueSetter, unit, ...rest }: InputPro
 }
 
 export function HexValueEditor({ name, valueSetter, ...rest }: InputProps<string>) {
+  const [inputValue, setInputValue] = useState<string>(valueSetter.value);
+
+  const regex = /^([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/;
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    valueSetter.setter(e.target.value);
+    const rawValue = e.target.value;
+    let testValue = rawValue.replace(/[^a-fA-F0-9]/g, '');
+
+    if (testValue.length > 6) {
+      testValue = testValue.slice(0, 6);
+    }
+
+    setInputValue(testValue);
+
+    if (regex.test(testValue)) {
+      valueSetter.setter(testValue);
+    }
   };
 
-  return <GenericInput name={name} unit="#" valueSetter={valueSetter} onChange={handleChange} unitOnLeft {...rest} />;
+  const handleBlur = () => {
+    setInputValue(valueSetter.value);
+  };
+
+  return (
+    <GenericInput
+      name={name}
+      unit="#"
+      valueSetter={valueSetter}
+      value={inputValue}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      unitOnLeft
+      {...rest}
+    />
+  );
 }

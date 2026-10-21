@@ -107,7 +107,7 @@ function BgColourEditor({ setNodes, selected }: EditorProps) {
       <HexValueEditor
         name="bg-colour-editor"
         valueSetter={{
-          value: selected.styles.backgroundColor ?? '181921',
+          value: selected.styles.backgroundColor ?? 'ffffff',
           setter: (value: string) => updateNodeBackgroundColour(setNodes, selected.id, value),
         }}
       />
