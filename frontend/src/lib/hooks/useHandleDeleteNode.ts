@@ -1,10 +1,8 @@
 import { useCallback } from 'react';
-import { Setter } from '../types';
 import { EditorNodeRecord, ID, ValueSetter } from '../editor/editor.types';
 import { isNodeDescendent } from '../editor/node-utils';
 
-// TODO: remove descendants too
-export default function useHandleDeleteNode(nodes: ValueSetter<EditorNodeRecord>, setSelected?: Setter<ID | null>) {
+export default function useHandleDeleteNode(nodes: ValueSetter<EditorNodeRecord>, selected: ValueSetter<ID | null>) {
   const handleDeleteNode = useCallback(
     (id: ID) => {
       nodes.setter((prev) => {
@@ -13,7 +11,7 @@ export default function useHandleDeleteNode(nodes: ValueSetter<EditorNodeRecord>
           .filter(([nodeId, _node]) => !isNodeDescendent(nodes.value, id, nodeId as ID))
           // Remove the node
           .filter(([nodeId, _node]) => nodeId !== id)
-          // Remove the node's id from children lists
+          // Remove the node's id its parent's children list
           .map(([key, node]) => {
             return [
               key,
@@ -29,10 +27,10 @@ export default function useHandleDeleteNode(nodes: ValueSetter<EditorNodeRecord>
         return Object.fromEntries(updated) as EditorNodeRecord;
       });
 
-      // Remove as selected node if provided
-      if (setSelected) setSelected(null);
+      // Remove as selected node if its selected
+      if (selected.value && selected.value === id) selected.setter(null);
     },
-    [nodes, setSelected],
+    [nodes, selected],
   );
 
   return { handleDeleteNode };

@@ -30,8 +30,8 @@ export interface Environment {
 export type ID = `#${string}`;
 
 export interface EditorNodeStyles {
-  width: string;
-  height: string;
+  width: number;
+  height: number;
   backgroundColor?: string;
 }
 
@@ -44,5 +44,5 @@ export interface EditorNode {
   name: string;
   type: EditorNodeType;
   children: ID[];
-  styles?: EditorNodeStyles;
+  styles: EditorNodeStyles;
 }

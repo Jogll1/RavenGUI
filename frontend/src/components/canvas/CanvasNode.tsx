@@ -93,9 +93,12 @@ export default function CanvasNode({ node, transformRef, selectedNode, updateNod
       ref={elementRef}
       style={{
         transform: `translate(${newX}px, ${newY}px)`,
+        width: `${node.styles.width}px`,
+        height: `${node.styles.height}px`,
+        backgroundColor: `#${node.styles.backgroundColor ?? '181921'}`,
       }}
       className={cn(
-        'bg-background text-surface-light absolute top-0 left-0 z-10 flex h-32 w-32 flex-col items-center justify-center border-3',
+        'text-surface-light absolute top-0 left-0 z-10 flex h-32 w-32 flex-col items-center justify-center border-3',
         ev(isDragging, 'cursor-grabbing shadow-2xl', 'cursor-grab shadow-md'),
         ev(selected, 'border-primary-light', 'hover:border-primary border-transparent'),
       )}
@@ -103,11 +106,6 @@ export default function CanvasNode({ node, transformRef, selectedNode, updateNod
         e.stopPropagation();
         selectThis();
       }}
-    >
-      <p>{node.name}</p>
-      <p>
-        ({Math.round(newX)}, {Math.round(newY)})
-      </p>
-    </div>
+    />
   );
 }

@@ -44,3 +44,9 @@
 
 - Added re-naming nodes
 - Added deleting nodes
+
+21/10/26
+
+- Added resizing nodes through inspector
+- Added keybinds file
+- Refactored integer value editor to allow negatives

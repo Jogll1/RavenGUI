@@ -7,8 +7,8 @@ import CanvasNode from './CanvasNode';
 import CanvasInfoBar from './CanvasInfoBar';
 import { DEFAULT_TARGET_X, DEFAULT_TARGET_Y, ROOT_ID } from '../../lib/editor/editor.shared';
 import useShortcuts from '../../lib/hooks/useShortcuts';
-import { Shortcut } from '../../lib/shortcuts.types';
 import { updateNodePosition } from '../../lib/editor/node-utils';
+import KEYBINDS from '../../lib/keybinds';
 
 // Goals
 // - Select: Left click drag
@@ -114,14 +114,13 @@ export default function Canvas({ environment }: { environment: Environment }) {
       environment.xTargetResolution.setter(DEFAULT_TARGET_X);
       environment.yTargetResolution.setter(DEFAULT_TARGET_Y);
     };
-    const shortcut: Shortcut = { key: 'r', modifiers: ['Ctrl'] };
 
-    register(shortcut, resizeTargetOutline);
-    return () => unregister(shortcut);
+    register(KEYBINDS.resetTargetAspect, resizeTargetOutline);
+    return () => unregister(KEYBINDS.resetTargetAspect);
   });
 
   return (
-    <div className="text-body relative flex size-full flex-col overflow-hidden bg-[#09090C] select-none">
+    <div className="text-body bg-background-dark relative flex size-full flex-col overflow-hidden select-none">
       <CanvasInfoBar transform={transform} />
 
       <div

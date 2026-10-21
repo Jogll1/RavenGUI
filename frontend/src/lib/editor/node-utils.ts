@@ -1,7 +1,7 @@
 import type { Setter } from '../types';
 import { ev } from '../utils';
 import { ROOT_ID } from './editor.shared';
-import type { EditorNode, EditorNodeRecord, EditorNodeType, ID } from './editor.types';
+import type { EditorNode, EditorNodeRecord, EditorNodeStyles, EditorNodeType, ID } from './editor.types';
 
 var nodeCounter: number = 0;
 
@@ -51,7 +51,7 @@ export function canParent(nodes: EditorNodeRecord, id: ID, newParent: ID) {
   );
 }
 
-export function createBaseNode(id?: ID, name?: string, parentID?: ID) {
+export function createBaseNode(id?: ID, name?: string, parentID?: ID, styles?: EditorNodeStyles) {
   nodeCounter++;
 
   const validNodeID: ID = id ?? getNodeID('base');
@@ -64,6 +64,11 @@ export function createBaseNode(id?: ID, name?: string, parentID?: ID) {
     y: 0,
     type: 'base',
     children: [],
+    styles: styles ?? {
+      width: 0,
+      height: 0,
+      backgroundColor: '#18192',
+    },
   };
 
   return { node, validParentID };
@@ -87,10 +92,36 @@ function updateNodeAttributes(nodesSetter: Setter<EditorNodeRecord>, id: string,
   });
 }
 
+function updateNodeStyles(nodesSetter: Setter<EditorNodeRecord>, id: string, newStyles: Partial<EditorNodeStyles>) {
+  nodesSetter((prev) => {
+    const updated = Object.entries(prev).map(([key, node]) => {
+      return [
+        key,
+        key === id
+          ? {
+              ...node,
+              styles: { ...newStyles },
+            }
+          : node,
+      ];
+    });
+
+    return Object.fromEntries(updated) as EditorNodeRecord;
+  });
+}
+
 export function updateNodePosition(nodesSetter: Setter<EditorNodeRecord>, id: string, newX: number, newY: number) {
   updateNodeAttributes(nodesSetter, id, { x: newX, y: newY });
 }
 
 export function updateNodeName(nodesSetter: Setter<EditorNodeRecord>, id: string, newName: string) {
   updateNodeAttributes(nodesSetter, id, { name: newName });
+}
+
+export function updateNodeSize(nodesSetter: Setter<EditorNodeRecord>, id: string, newW: number, newH: number) {
+  updateNodeStyles(nodesSetter, id, { width: newW, height: newH });
+}
+
+export function updateNodeBackgroundColour(nodesSetter: Setter<EditorNodeRecord>, id: string, newBgColour: string) {
+  updateNodeStyles(nodesSetter, id, { backgroundColor: newBgColour });
 }

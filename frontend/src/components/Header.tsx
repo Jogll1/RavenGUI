@@ -18,14 +18,14 @@ export default function Header({ environment }: { environment: Environment }) {
           Target:
           <NumericValueEditor
             name="target-x-editor"
-            integerOnly
+            min={0}
             valueSetter={environment.xTargetResolution}
             className="max-w-12.5"
           />
           ×
           <NumericValueEditor
             name="target-y-editor"
-            integerOnly
+            min={0}
             valueSetter={environment.yTargetResolution}
             className="max-w-12.5"
           />

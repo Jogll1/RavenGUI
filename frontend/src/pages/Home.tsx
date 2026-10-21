@@ -8,8 +8,8 @@ import SceneTree from '../components/SceneTree';
 import Inspector from '../components/Inspector';
 import useHandleCreateNode from '../lib/hooks/useHandleCreateNode';
 import useShortcuts from '../lib/hooks/useShortcuts';
-import { Shortcut } from '../lib/shortcuts.types';
 import useHandleDeleteNode from '../lib/hooks/useHandleDeleteNode';
+import KEYBINDS from '../lib/keybinds';
 
 // TODO:
 // - Multiple select (replace selected with an array and only show inspector when size == 1)
@@ -21,6 +21,10 @@ const rootNode: EditorNode = {
   y: 0,
   type: 'root',
   children: [],
+  styles: {
+    width: 0,
+    height: 0,
+  },
 };
 
 export default function Home() {
@@ -31,7 +35,8 @@ export default function Home() {
     [ROOT_ID]: rootNode,
   });
 
-  const [selected, setSelected] = useState<ID | null>(null);
+  const selectedState = useState<ID | null>(null);
+  const selected = stateToValueSetter(selectedState[0], selectedState[1]);
 
   const [xTargetResolution, setXTargetResolution] = useState<number>(DEFAULT_TARGET_X);
   const [yTargetResolution, setYTargetResolution] = useState<number>(DEFAULT_TARGET_Y);
@@ -39,7 +44,7 @@ export default function Home() {
   // Create environment
   const environment: Environment = {
     nodes: stateToValueSetter(nodes, setNodes),
-    selected: stateToValueSetter(selected, setSelected),
+    selected,
 
     xTargetResolution: stateToValueSetter(xTargetResolution, setXTargetResolution),
     yTargetResolution: stateToValueSetter(yTargetResolution, setYTargetResolution),
@@ -47,24 +52,20 @@ export default function Home() {
 
   // Register Ctrl+A to create a new node
   const { handleCreateNode } = useHandleCreateNode(setNodes);
-  const createNode = () => handleCreateNode();
-
-  const newNodeShortcut: Shortcut = { key: 'a', modifiers: ['Ctrl'] };
+  const createNode = () => handleCreateNode(undefined, undefined, undefined, { width: 128, height: 128 });
 
   // Register Delete to delete a selected node
-  const { handleDeleteNode } = useHandleDeleteNode(environment.nodes, setSelected);
-  const deleteNode = () => selected && handleDeleteNode(selected);
-
-  const deleteNodeShortcut: Shortcut = { key: 'delete' };
+  const { handleDeleteNode } = useHandleDeleteNode(environment.nodes, selected);
+  const deleteNode = () => selected.value && handleDeleteNode(selected.value);
 
   // Register keybinds
   useEffect(() => {
-    register(newNodeShortcut, createNode);
-    register(deleteNodeShortcut, deleteNode);
+    register(KEYBINDS.newNode, createNode);
+    register(KEYBINDS.deleteNode, deleteNode);
 
     return () => {
-      unregister(newNodeShortcut);
-      unregister(deleteNodeShortcut);
+      unregister(KEYBINDS.newNode);
+      unregister(KEYBINDS.deleteNode);
     };
   });
 
