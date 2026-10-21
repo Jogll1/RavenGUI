@@ -51,3 +51,4 @@
 - Added keybinds file
 - Refactored integer value editor to allow negatives
 - Added changing node colour
+- Added z index editor

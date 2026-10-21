@@ -67,7 +67,7 @@ export function createBaseNode(id?: ID, name?: string, parentID?: ID, styles?: E
     styles: styles ?? {
       width: 0,
       height: 0,
-      backgroundColor: '#18192',
+      backgroundColor: '#ffffff',
     },
   };
 
@@ -124,4 +124,8 @@ export function updateNodeSize(nodesSetter: Setter<EditorNodeRecord>, id: string
 
 export function updateNodeBackgroundColour(nodesSetter: Setter<EditorNodeRecord>, id: string, newBgColour: string) {
   updateNodeStyles(nodesSetter, id, { backgroundColor: newBgColour });
+}
+
+export function updateNodeZIndex(nodesSetter: Setter<EditorNodeRecord>, id: string, newZ: number) {
+  updateNodeStyles(nodesSetter, id, { zIndex: newZ });
 }

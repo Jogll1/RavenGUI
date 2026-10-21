@@ -5,6 +5,7 @@ import {
   updateNodeName,
   updateNodePosition,
   updateNodeSize,
+  updateNodeZIndex,
 } from '../lib/editor/node-utils';
 import type { Setter } from '../lib/types';
 import { NodeIcon } from './canvas/CanvasNode';
@@ -115,6 +116,21 @@ function BgColourEditor({ setNodes, selected }: EditorProps) {
   );
 }
 
+function ZIndexEditor({ setNodes, selected }: EditorProps) {
+  return (
+    <>
+      <p>Z Index</p>
+      <NumericValueEditor
+        name="z-index-editor"
+        valueSetter={{
+          value: selected.styles.zIndex ?? 0,
+          setter: (value: number) => updateNodeZIndex(setNodes, selected.id, value),
+        }}
+      />
+    </>
+  );
+}
+
 export default function Inspector({ environment }: { environment: Environment }) {
   const selected = environment.selected.value ? getNodeByID(environment.nodes.value, environment.selected.value) : null;
 
@@ -128,6 +144,7 @@ export default function Inspector({ environment }: { environment: Environment })
           <div className="grid w-full grid-cols-2 gap-2">
             <PositionEditor setNodes={environment.nodes.setter} selected={selected} />
             <SizeEditor setNodes={environment.nodes.setter} selected={selected} />
+            <ZIndexEditor setNodes={environment.nodes.setter} selected={selected} />
             <BgColourEditor setNodes={environment.nodes.setter} selected={selected} />
           </div>
         </div>

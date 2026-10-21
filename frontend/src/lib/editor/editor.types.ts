@@ -33,6 +33,7 @@ export interface EditorNodeStyles {
   width: number;
   height: number;
   backgroundColor?: string;
+  zIndex?: number;
 }
 
 export type EditorNodeType = 'root' | 'base';

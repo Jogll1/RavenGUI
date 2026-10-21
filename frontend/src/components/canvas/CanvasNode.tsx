@@ -96,10 +96,11 @@ export default function CanvasNode({ node, transformRef, selectedNode, updateNod
         width: `${node.styles.width}px`,
         height: `${node.styles.height}px`,
         backgroundColor: `#${node.styles.backgroundColor ?? 'ffffff'}`,
+        zIndex: node.styles.zIndex ?? 0,
       }}
       className={cn(
-        'text-surface-light absolute top-0 left-0 z-10 flex h-32 w-32 flex-col items-center justify-center border-3',
-        ev(isDragging, 'cursor-grabbing shadow-2xl', 'cursor-grab shadow-md'),
+        'text-surface-light absolute top-0 left-0 flex h-32 w-32 flex-col items-center justify-center border-3',
+        ev(isDragging, 'cursor-grabbing', 'cursor-grab'),
         ev(selected, 'border-primary-light', 'hover:border-primary border-transparent'),
       )}
       onClick={(e) => {
