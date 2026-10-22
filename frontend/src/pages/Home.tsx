@@ -24,6 +24,7 @@ const rootNode: EditorNode = {
   styles: {
     width: 0,
     height: 0,
+    visible: false,
   },
 };
 
@@ -52,7 +53,8 @@ export default function Home() {
 
   // Register Ctrl+A to create a new node
   const { handleCreateNode } = useHandleCreateNode(setNodes);
-  const createNode = () => handleCreateNode(undefined, undefined, undefined, { width: 128, height: 128 });
+  const createNode = () =>
+    handleCreateNode(undefined, undefined, undefined, { width: 128, height: 128, visible: true });
 
   // Register Delete to delete a selected node
   const { handleDeleteNode } = useHandleDeleteNode(environment.nodes, selected);

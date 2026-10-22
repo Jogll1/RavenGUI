@@ -26,7 +26,7 @@ export default function EditorPanel({
     >
       {title && <h1 className="text-muted px-3 pt-2 pb-1 text-sm font-bold">{title}</h1>}
       {Toolbar && <Toolbar />}
-      <div className={cn('bg-background m-1 h-full overflow-clip', contentClassName)}>{children}</div>
+      <div className={cn('bg-background m-1 h-full overflow-hidden', contentClassName)}>{children}</div>
     </Panel>
   );
 }

@@ -68,6 +68,7 @@ export function createBaseNode(id?: ID, name?: string, parentID?: ID, styles?: E
       width: 0,
       height: 0,
       backgroundColor: '#ffffff',
+      visible: true,
     },
   };
 
@@ -124,6 +125,10 @@ export function updateNodeSize(nodesSetter: Setter<EditorNodeRecord>, id: string
 
 export function updateNodeBackgroundColour(nodesSetter: Setter<EditorNodeRecord>, id: string, newBgColour: string) {
   updateNodeStyles(nodesSetter, id, { backgroundColor: newBgColour });
+}
+
+export function updateNodeVisibility(nodesSetter: Setter<EditorNodeRecord>, id: string, isVisible: boolean) {
+  updateNodeStyles(nodesSetter, id, { visible: isVisible });
 }
 
 export function updateNodeZIndex(nodesSetter: Setter<EditorNodeRecord>, id: string, newZ: number) {

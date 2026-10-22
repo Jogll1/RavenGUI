@@ -1,15 +1,18 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Resizable, type ResizeCallbackData } from 'react-resizable';
+import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { disableNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/disable-native-drag-preview';
 import { FaRegCircle } from 'react-icons/fa6';
-
 import type { Transform, EditorNode, ValueSetter, ID } from '../../lib/editor/editor.types';
 import { cn, ev } from '../../lib/utils';
 
 // TODO:
 // - Small movements with arrow keys
+// - Make resize handles and border always have the same size on the screen
+// - Make dragging not have the red circle icon
+// - Make block outline and resize handles always on top
 
-/** Minimum drag move step in pixels. */
+/** Minimum move step in pixels. */
 const MOVE_STEP = 4;
 
 function getNewCoords(oldX: number, oldY: number, dX: number, dY: number) {
@@ -22,23 +25,67 @@ function getNewCoords(oldX: number, oldY: number, dX: number, dY: number) {
 export function NodeIcon({ node }: { node: EditorNode }) {
   switch (node.type) {
     case 'base':
-      return <FaRegCircle size={12} className="pb-0.5" />;
+      return <FaRegCircle size={16} className="pb-0.5" />;
     default:
       return <></>;
   }
 }
 
+const ResizeHandle = forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & { handleAxis?: string; selected: boolean }
+>((props, ref) => {
+  const { handleAxis, ...restProps } = props;
+
+  const getHandle = (axis: string | undefined) => {
+    switch (axis) {
+      case 'sw':
+        return '-bottom-1.75 -left-1.75 cursor-sw-resize';
+      case 'se':
+        return '-bottom-1.75 -right-1.75 cursor-se-resize';
+      case 'nw':
+        return '-top-1.75 -left-1.75 cursor-nw-resize';
+      case 'ne':
+        return '-top-1.75 -right-1.75 cursor-ne-resize';
+      default:
+        return '';
+    }
+  };
+
+  return (
+    <div
+      className={cn(
+        'border-primary-light absolute! z-99! size-3 border-3 bg-white',
+        ev(props.selected, 'block', 'hidden'),
+        getHandle(handleAxis),
+      )}
+      ref={ref}
+      {...restProps}
+    ></div>
+  );
+});
+
 interface CanvasNodeProps {
   node: EditorNode;
+  canvasScale: number;
   transformRef: React.RefObject<Transform>;
   selectedNode: ValueSetter<ID | null>;
   updateNodePosition: (id: string, newX: number, newY: number) => void;
+  updateNodeSize: (id: string, newW: number, newH: number) => void;
 }
 
-export default function CanvasNode({ node, transformRef, selectedNode, updateNodePosition }: CanvasNodeProps) {
+export default function CanvasNode({
+  node,
+  canvasScale,
+  transformRef,
+  selectedNode,
+  updateNodePosition,
+  updateNodeSize,
+}: CanvasNodeProps) {
   const selected = selectedNode !== null && selectedNode.value === node.id;
 
   const elementRef = useRef<HTMLDivElement>(null);
+  const isResizingRef = useRef(false);
 
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -53,6 +100,7 @@ export default function CanvasNode({ node, transformRef, selectedNode, updateNod
 
     return draggable({
       element: el,
+      canDrag: () => !isResizingRef.current,
       onGenerateDragPreview({ nativeSetDragImage }) {
         disableNativeDragPreview({ nativeSetDragImage });
       },
@@ -88,25 +136,51 @@ export default function CanvasNode({ node, transformRef, selectedNode, updateNod
 
   const { newX, newY } = getNewCoords(node.x, node.y, dragOffset.x, dragOffset.y);
 
+  const onResize = (e: React.SyntheticEvent, data: ResizeCallbackData) => {
+    // TODO: reposition on resize for correct resizing
+    updateNodeSize(
+      node.id,
+      Math.ceil(data.size.width / MOVE_STEP) * MOVE_STEP,
+      Math.ceil(data.size.height / MOVE_STEP) * MOVE_STEP,
+    );
+  };
+
   return (
-    <div
-      ref={elementRef}
-      style={{
-        transform: `translate(${newX}px, ${newY}px)`,
-        width: `${node.styles.width}px`,
-        height: `${node.styles.height}px`,
-        backgroundColor: `#${node.styles.backgroundColor ?? 'ffffff'}`,
-        zIndex: node.styles.zIndex ?? 0,
+    <Resizable
+      width={node.styles.width}
+      height={node.styles.height}
+      onResize={onResize}
+      onResizeStart={() => {
+        isResizingRef.current = true;
       }}
-      className={cn(
-        'text-surface-light absolute top-0 left-0 flex h-32 w-32 flex-col items-center justify-center border-3',
-        ev(isDragging, 'cursor-grabbing', 'cursor-grab'),
-        ev(selected, 'border-primary-light', 'hover:border-primary border-transparent'),
-      )}
-      onClick={(e) => {
-        e.stopPropagation();
-        selectThis();
+      onResizeStop={() => {
+        isResizingRef.current = false;
       }}
-    />
+      resizeHandles={['sw', 'nw', 'se', 'ne']}
+      handle={<ResizeHandle selected={selected} />}
+      transformScale={canvasScale}
+      className="absolute!"
+    >
+      <div
+        ref={elementRef}
+        style={{
+          transform: `translate(${newX}px, ${newY}px)`,
+          width: `${node.styles.width}px`,
+          height: `${node.styles.height}px`,
+          backgroundColor: `#${node.styles.backgroundColor ?? 'ffffff'}`,
+          zIndex: node.styles.zIndex ?? 0,
+        }}
+        className={cn(
+          'text-surface-light absolute top-0 left-0 h-32 w-32 border-3',
+          ev(isDragging, 'cursor-grabbing', 'cursor-grab'),
+          ev(selected, 'border-primary-light', 'hover:border-primary border-transparent'),
+          ev(node.styles.visible ?? true, 'block', 'hidden'),
+        )}
+        onClick={(e) => {
+          e.stopPropagation();
+          selectThis();
+        }}
+      />
+    </Resizable>
   );
 }

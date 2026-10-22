@@ -2,11 +2,13 @@ import { ROOT_ID } from '../lib/editor/editor.shared';
 import type { EditorNodeRecord, EditorNode, Environment, ID, ValueSetter } from '../lib/editor/editor.types';
 import { cn, ev } from '../lib/utils';
 import EditorPanel from './EditorPanel';
-import { getNodesByID, getRootNode } from '../lib/editor/node-utils';
+import { getNodesByID, getRootNode, updateNodeVisibility } from '../lib/editor/node-utils';
 import { NodeIcon } from './canvas/CanvasNode';
 import { useEffect } from 'react';
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import useReparentDropTarget from '../lib/hooks/useReparentDropTarget';
+import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
+import type { Setter } from '../lib/types';
 
 function Details({ children, className, ...rest }: React.ComponentProps<'details'>) {
   return (
@@ -64,6 +66,17 @@ function RootDropZone({ nodes }: { nodes: ValueSetter<EditorNodeRecord> }) {
   );
 }
 
+function HideNodeButton({ node, nodes }: { node: EditorNode; nodes: Setter<EditorNodeRecord> }) {
+  return (
+    <div
+      className="absolute inset-y-1 right-1"
+      onClick={() => updateNodeVisibility(nodes, node.id, !node.styles.visible)}
+    >
+      {node.styles.visible ? <FaRegEye size={16} /> : <FaRegEyeSlash size={16} />}
+    </div>
+  );
+}
+
 interface SceneTreeEntryProps {
   nodes: ValueSetter<EditorNodeRecord>;
   node: EditorNode;
@@ -99,7 +112,8 @@ function SceneTreeEntry({ nodes, node, selectedNode }: SceneTreeEntryProps) {
   }, [ref, node]);
 
   return (
-    <NodeElement className="flex flex-col">
+    <NodeElement className="relative flex flex-col">
+      <HideNodeButton node={node} nodes={nodes.setter} />
       <TitleElement
         className={cn('grid list-none grid-cols-[16px_1fr] items-center select-none')}
         onClick={(e) => {
@@ -110,8 +124,9 @@ function SceneTreeEntry({ nodes, node, selectedNode }: SceneTreeEntryProps) {
         <div
           className={cn(
             'flex w-full flex-row items-center gap-1 rounded-md px-1',
-            ev(selected, 'bg-primary-light text-heading', 'hover:bg-primary-dark hover:text-heading'),
-            ev(hovered, 'bg-primary-dark text-heading'),
+            ev(selected, 'bg-primary-light', 'hover:bg-primary-dark'),
+            ev(hovered, 'bg-primary-dark text-muted'),
+            ev(node.styles.visible, 'text-heading', ev(hovered, 'text-muted', 'text-surface-light')),
             ev(hasChildren, 'cursor-pointer'),
           )}
           onClick={(e) => {

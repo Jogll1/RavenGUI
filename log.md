@@ -52,3 +52,8 @@
 - Refactored integer value editor to allow negatives
 - Added changing node colour
 - Added z index editor
+
+22/10/26
+
+- Added resizing nodes through drag handles
+- Added toggling node opacity

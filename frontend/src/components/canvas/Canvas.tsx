@@ -7,7 +7,7 @@ import CanvasNode from './CanvasNode';
 import CanvasInfoBar from './CanvasInfoBar';
 import { DEFAULT_TARGET_X, DEFAULT_TARGET_Y, ROOT_ID } from '../../lib/editor/editor.shared';
 import useShortcuts from '../../lib/hooks/useShortcuts';
-import { updateNodePosition } from '../../lib/editor/node-utils';
+import { updateNodePosition, updateNodeSize } from '../../lib/editor/node-utils';
 import KEYBINDS from '../../lib/keybinds';
 
 // Goals
@@ -137,7 +137,7 @@ export default function Canvas({ environment }: { environment: Environment }) {
       >
         {/* Aspect target outline */}
         <div
-          className="border-surface/60 absolute inset-0 border-3 border-dashed"
+          className="border-surface/60 pointer-events-none absolute inset-0 z-999 border-3 border-dashed"
           style={{
             width: `${environment.xTargetResolution.value * transform.scale}px`,
             height: `${environment.yTargetResolution.value * transform.scale}px`,
@@ -153,10 +153,14 @@ export default function Canvas({ environment }: { environment: Environment }) {
                 <CanvasNode
                   key={node.id}
                   node={node}
+                  canvasScale={transform.scale}
                   transformRef={transformRef}
                   selectedNode={environment.selected}
                   updateNodePosition={(id: string, newX: number, newY: number) => {
                     updateNodePosition(setNodes, id, newX, newY);
+                  }}
+                  updateNodeSize={(id: string, newW: number, newH: number) => {
+                    updateNodeSize(setNodes, id, newW, newH);
                   }}
                 />
               );

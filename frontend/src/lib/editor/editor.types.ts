@@ -34,6 +34,7 @@ export interface EditorNodeStyles {
   height: number;
   backgroundColor?: string;
   zIndex?: number;
+  visible: boolean;
 }
 
 export type EditorNodeType = 'root' | 'base';
