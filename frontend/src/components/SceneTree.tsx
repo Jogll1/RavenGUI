@@ -69,7 +69,7 @@ function RootDropZone({ nodes }: { nodes: ValueSetter<EditorNodeRecord> }) {
 function HideNodeButton({ node, nodes }: { node: EditorNode; nodes: Setter<EditorNodeRecord> }) {
   return (
     <div
-      className="absolute inset-y-1 right-1"
+      className="hover:bg-surface flex items-center justify-center rounded-md p-1"
       onClick={() => updateNodeVisibility(nodes, node.id, !node.styles.visible)}
     >
       {node.styles.visible ? <FaRegEye size={16} /> : <FaRegEyeSlash size={16} />}
@@ -84,7 +84,7 @@ interface SceneTreeEntryProps {
 }
 
 // TODO: lines | under nodes with children
-// TODO: un-parenting nodes and rearranging
+// TODO: rearranging
 function SceneTreeEntry({ nodes, node, selectedNode }: SceneTreeEntryProps) {
   const { ref, hovered } = useReparentDropTarget(nodes, node.id);
 
@@ -113,9 +113,8 @@ function SceneTreeEntry({ nodes, node, selectedNode }: SceneTreeEntryProps) {
 
   return (
     <NodeElement className="relative flex flex-col">
-      <HideNodeButton node={node} nodes={nodes.setter} />
       <TitleElement
-        className={cn('grid list-none grid-cols-[16px_1fr] items-center select-none')}
+        className={cn('grid list-none grid-cols-[16px_1fr_24px] items-center select-none')}
         onClick={(e) => {
           e.preventDefault();
         }}
@@ -123,10 +122,10 @@ function SceneTreeEntry({ nodes, node, selectedNode }: SceneTreeEntryProps) {
         {hasChildren ? <ArrowButton /> : <div></div>}
         <div
           className={cn(
-            'flex w-full flex-row items-center gap-1 rounded-md px-1',
+            'flex w-full flex-row items-center gap-1 overflow-hidden rounded-md px-1',
             ev(selected, 'bg-primary-light', 'hover:bg-primary-dark'),
+            ev(node.styles.visible, 'text-heading', ev(selected, 'text-muted', 'text-surface-light hover:text-muted')),
             ev(hovered, 'bg-primary-dark text-muted'),
-            ev(node.styles.visible, 'text-heading', ev(hovered, 'text-muted', 'text-surface-light')),
             ev(hasChildren, 'cursor-pointer'),
           )}
           onClick={(e) => {
@@ -137,8 +136,9 @@ function SceneTreeEntry({ nodes, node, selectedNode }: SceneTreeEntryProps) {
           ref={ref}
         >
           <NodeIcon node={node} />
-          <p>{node.name}</p>
+          <p className="truncate text-nowrap">{node.name}</p>
         </div>
+        <HideNodeButton node={node} nodes={nodes.setter} />
       </TitleElement>
       {hasChildren && (
         <div className="ml-4 flex flex-col">

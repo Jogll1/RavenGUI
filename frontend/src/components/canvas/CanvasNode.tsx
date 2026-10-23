@@ -17,18 +17,22 @@ const MOVE_STEP = 4;
 
 function getNewCoords(oldX: number, oldY: number, dX: number, dY: number) {
   return {
-    newX: Math.ceil((oldX + dX) / MOVE_STEP) * MOVE_STEP,
-    newY: Math.ceil((oldY + dY) / MOVE_STEP) * MOVE_STEP,
+    newX: dX !== 0 ? Math.ceil((oldX + dX) / MOVE_STEP) * MOVE_STEP : oldX,
+    newY: dY !== 0 ? Math.ceil((oldY + dY) / MOVE_STEP) * MOVE_STEP : oldY,
   };
 }
 
 export function NodeIcon({ node }: { node: EditorNode }) {
+  let Icon = <></>;
   switch (node.type) {
     case 'base':
-      return <FaRegCircle size={16} className="pb-0.5" />;
+      Icon = <FaRegCircle size={16} className="pb-0.5" />;
+      break;
     default:
-      return <></>;
+      break;
   }
+
+  return <div className="w-4">{Icon}</div>;
 }
 
 const ResizeHandle = forwardRef<
@@ -55,13 +59,13 @@ const ResizeHandle = forwardRef<
   return (
     <div
       className={cn(
-        'border-primary-light absolute! z-99! size-3 border-3 bg-white',
+        'border-primary-light absolute! size-3 border-3 bg-white',
         ev(props.selected, 'block', 'hidden'),
         getHandle(handleAxis),
       )}
       ref={ref}
       {...restProps}
-    ></div>
+    />
   );
 });
 
@@ -70,8 +74,8 @@ interface CanvasNodeProps {
   canvasScale: number;
   transformRef: React.RefObject<Transform>;
   selectedNode: ValueSetter<ID | null>;
-  updateNodePosition: (id: string, newX: number, newY: number) => void;
-  updateNodeSize: (id: string, newW: number, newH: number) => void;
+  updateNodePosition: (id: ID, newX: number, newY: number) => void;
+  updateNodeSize: (id: ID, newW: number, newH: number) => void;
 }
 
 export default function CanvasNode({
@@ -136,13 +140,28 @@ export default function CanvasNode({
 
   const { newX, newY } = getNewCoords(node.x, node.y, dragOffset.x, dragOffset.y);
 
-  const onResize = (e: React.SyntheticEvent, data: ResizeCallbackData) => {
-    // TODO: reposition on resize for correct resizing
-    updateNodeSize(
-      node.id,
-      Math.ceil(data.size.width / MOVE_STEP) * MOVE_STEP,
-      Math.ceil(data.size.height / MOVE_STEP) * MOVE_STEP,
-    );
+  const onResize = (_e: React.SyntheticEvent, data: ResizeCallbackData) => {
+    // Use newX and newY
+    const newW = Math.ceil(data.size.width / MOVE_STEP) * MOVE_STEP;
+    const newH = Math.ceil(data.size.height / MOVE_STEP) * MOVE_STEP;
+    let dX = 0;
+    let dY = 0;
+
+    switch (data.handle) {
+      case 'sw':
+        dX = newW - node.styles.width;
+        break;
+      case 'nw':
+        dX = newW - node.styles.width;
+        dY = newH - node.styles.height;
+        break;
+      case 'ne':
+        dY = newH - node.styles.height;
+        break;
+    }
+
+    updateNodePosition(node.id, node.x - dX, node.y - dY);
+    updateNodeSize(node.id, newW, newH);
   };
 
   return (
@@ -169,6 +188,7 @@ export default function CanvasNode({
           height: `${node.styles.height}px`,
           backgroundColor: `#${node.styles.backgroundColor ?? 'ffffff'}`,
           zIndex: node.styles.zIndex ?? 0,
+          opacity: (node.styles.opacity ?? 100) / 100,
         }}
         className={cn(
           'text-surface-light absolute top-0 left-0 h-32 w-32 border-3',

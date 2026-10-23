@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { pointer, select } from 'd3-selection';
 import { zoom, ZoomTransform } from 'd3-zoom';
 
-import { type Transform, type Environment } from '../../lib/editor/editor.types';
+import { type Transform, type Environment, ID } from '../../lib/editor/editor.types';
 import CanvasNode from './CanvasNode';
 import CanvasInfoBar from './CanvasInfoBar';
 import { DEFAULT_TARGET_X, DEFAULT_TARGET_Y, ROOT_ID } from '../../lib/editor/editor.shared';
@@ -156,10 +156,10 @@ export default function Canvas({ environment }: { environment: Environment }) {
                   canvasScale={transform.scale}
                   transformRef={transformRef}
                   selectedNode={environment.selected}
-                  updateNodePosition={(id: string, newX: number, newY: number) => {
+                  updateNodePosition={(id: ID, newX: number, newY: number) => {
                     updateNodePosition(setNodes, id, newX, newY);
                   }}
-                  updateNodeSize={(id: string, newW: number, newH: number) => {
+                  updateNodeSize={(id: ID, newW: number, newH: number) => {
                     updateNodeSize(setNodes, id, newW, newH);
                   }}
                 />

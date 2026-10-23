@@ -132,8 +132,17 @@ export function StringValueEditor({ name, valueSetter, unit, ...rest }: InputPro
 
 export function HexValueEditor({ name, valueSetter, ...rest }: InputProps<string>) {
   const [inputValue, setInputValue] = useState<string>(valueSetter.value);
+  const lastSyncValue = useRef<string>(valueSetter.value);
 
   const regex = /^([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/;
+
+  // Sync valueSetter.value
+  useEffect(() => {
+    if (valueSetter.value !== lastSyncValue.current) {
+      setInputValue(String(valueSetter.value));
+      lastSyncValue.current = valueSetter.value;
+    }
+  }, [valueSetter.value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;

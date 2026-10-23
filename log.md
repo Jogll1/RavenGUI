@@ -57,3 +57,7 @@
 
 - Added resizing nodes through drag handles
 - Added toggling node opacity
+
+23/10/26
+
+- Fix resizing nodes with handles to update their positions

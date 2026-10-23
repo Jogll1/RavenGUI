@@ -111,26 +111,44 @@ function updateNodeStyles(nodesSetter: Setter<EditorNodeRecord>, id: string, new
   });
 }
 
-export function updateNodePosition(nodesSetter: Setter<EditorNodeRecord>, id: string, newX: number, newY: number) {
+export function updateNodePosition(nodesSetter: Setter<EditorNodeRecord>, id: ID, newX: number, newY: number) {
   updateNodeAttributes(nodesSetter, id, { x: newX, y: newY });
 }
 
-export function updateNodeName(nodesSetter: Setter<EditorNodeRecord>, id: string, newName: string) {
+export function updateNodeName(nodesSetter: Setter<EditorNodeRecord>, id: ID, newName: string) {
   updateNodeAttributes(nodesSetter, id, { name: newName });
 }
 
-export function updateNodeSize(nodesSetter: Setter<EditorNodeRecord>, id: string, newW: number, newH: number) {
+export function updateNodeSize(nodesSetter: Setter<EditorNodeRecord>, id: ID, newW: number, newH: number) {
   updateNodeStyles(nodesSetter, id, { width: newW, height: newH });
 }
 
-export function updateNodeBackgroundColour(nodesSetter: Setter<EditorNodeRecord>, id: string, newBgColour: string) {
+export function updateNodeBackgroundColour(nodesSetter: Setter<EditorNodeRecord>, id: ID, newBgColour: string) {
   updateNodeStyles(nodesSetter, id, { backgroundColor: newBgColour });
 }
 
-export function updateNodeVisibility(nodesSetter: Setter<EditorNodeRecord>, id: string, isVisible: boolean) {
-  updateNodeStyles(nodesSetter, id, { visible: isVisible });
+export function updateNodeVisibility(nodesSetter: Setter<EditorNodeRecord>, id: ID, isVisible: boolean) {
+  nodesSetter((prev) => {
+    const updated = Object.entries(prev).map(([key, node]) => {
+      return [
+        key,
+        key === id || isNodeDescendent(prev, id, node.id)
+          ? {
+              ...node,
+              styles: { ...node.styles, visible: isVisible },
+            }
+          : node,
+      ];
+    });
+
+    return Object.fromEntries(updated) as EditorNodeRecord;
+  });
 }
 
-export function updateNodeZIndex(nodesSetter: Setter<EditorNodeRecord>, id: string, newZ: number) {
+export function updateNodeZIndex(nodesSetter: Setter<EditorNodeRecord>, id: ID, newZ: number) {
   updateNodeStyles(nodesSetter, id, { zIndex: newZ });
+}
+
+export function updateNodeOpacity(nodesSetter: Setter<EditorNodeRecord>, id: ID, newOpacity: number) {
+  updateNodeStyles(nodesSetter, id, { opacity: newOpacity });
 }

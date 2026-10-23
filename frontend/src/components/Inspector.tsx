@@ -3,6 +3,7 @@ import {
   getNodeByID,
   updateNodeBackgroundColour,
   updateNodeName,
+  updateNodeOpacity,
   updateNodePosition,
   updateNodeSize,
   updateNodeZIndex,
@@ -131,6 +132,24 @@ function ZIndexEditor({ setNodes, selected }: EditorProps) {
   );
 }
 
+function OpacityEditor({ setNodes, selected }: EditorProps) {
+  return (
+    <>
+      <p>Opacity</p>
+      <NumericValueEditor
+        name="opacity-editor"
+        valueSetter={{
+          value: selected.styles.opacity ?? 100,
+          setter: (value: number) => updateNodeOpacity(setNodes, selected.id, value),
+        }}
+        unit="%"
+        min={0}
+        max={100}
+      />
+    </>
+  );
+}
+
 export default function Inspector({ environment }: { environment: Environment }) {
   const selected = environment.selected.value ? getNodeByID(environment.nodes.value, environment.selected.value) : null;
 
@@ -146,6 +165,7 @@ export default function Inspector({ environment }: { environment: Environment })
             <SizeEditor setNodes={environment.nodes.setter} selected={selected} />
             <ZIndexEditor setNodes={environment.nodes.setter} selected={selected} />
             <BgColourEditor setNodes={environment.nodes.setter} selected={selected} />
+            <OpacityEditor setNodes={environment.nodes.setter} selected={selected} />
           </div>
         </div>
       )}
