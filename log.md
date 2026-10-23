@@ -61,3 +61,4 @@
 23/10/26
 
 - Fix resizing nodes with handles to update their positions
+- Made parent nodes control the position of child nodes

@@ -139,7 +139,7 @@ export function HexValueEditor({ name, valueSetter, ...rest }: InputProps<string
   // Sync valueSetter.value
   useEffect(() => {
     if (valueSetter.value !== lastSyncValue.current) {
-      setInputValue(String(valueSetter.value));
+      setInputValue(valueSetter.value);
       lastSyncValue.current = valueSetter.value;
     }
   }, [valueSetter.value]);
@@ -161,6 +161,7 @@ export function HexValueEditor({ name, valueSetter, ...rest }: InputProps<string
 
   const handleBlur = () => {
     setInputValue(valueSetter.value);
+    lastSyncValue.current = valueSetter.value;
   };
 
   return (

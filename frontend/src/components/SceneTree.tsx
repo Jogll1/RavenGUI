@@ -1,4 +1,3 @@
-import { ROOT_ID } from '../lib/editor/editor.shared';
 import type { EditorNodeRecord, EditorNode, Environment, ID, ValueSetter } from '../lib/editor/editor.types';
 import { cn, ev } from '../lib/utils';
 import EditorPanel from './EditorPanel';
@@ -166,16 +165,9 @@ export default function SceneTree({ environment }: { environment: Environment })
       <div className="flex size-full flex-col overflow-auto p-2" onClick={handleOnClick}>
         <RootDropZone nodes={environment.nodes} />
         {rootChildren.map((child) => {
-          if (child.id !== ROOT_ID) {
-            return (
-              <SceneTreeEntry
-                key={child.id}
-                nodes={environment.nodes}
-                node={child}
-                selectedNode={environment.selected}
-              />
-            );
-          }
+          return (
+            <SceneTreeEntry key={child.id} nodes={environment.nodes} node={child} selectedNode={environment.selected} />
+          );
         })}
       </div>
     </EditorPanel>

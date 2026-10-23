@@ -1,10 +1,11 @@
 import { Resizable, type ResizeCallbackData } from 'react-resizable';
-import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { disableNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/disable-native-drag-preview';
 import { FaRegCircle } from 'react-icons/fa6';
-import type { Transform, EditorNode, ValueSetter, ID } from '../../lib/editor/editor.types';
+import type { Transform, EditorNode, ValueSetter, ID, EditorNodeRecord } from '../../lib/editor/editor.types';
 import { cn, ev } from '../../lib/utils';
+import { getNodesByID, updateNodePosition, updateNodeSize } from '../../lib/editor/node-utils';
 
 // TODO:
 // - Small movements with arrow keys
@@ -17,8 +18,8 @@ const MOVE_STEP = 4;
 
 function getNewCoords(oldX: number, oldY: number, dX: number, dY: number) {
   return {
-    newX: dX !== 0 ? Math.ceil((oldX + dX) / MOVE_STEP) * MOVE_STEP : oldX,
-    newY: dY !== 0 ? Math.ceil((oldY + dY) / MOVE_STEP) * MOVE_STEP : oldY,
+    newX: dX !== 0 ? Math.round(Math.ceil((oldX + dX) / MOVE_STEP) * MOVE_STEP) : oldX,
+    newY: dY !== 0 ? Math.round(Math.ceil((oldY + dY) / MOVE_STEP) * MOVE_STEP) : oldY,
   };
 }
 
@@ -71,21 +72,13 @@ const ResizeHandle = forwardRef<
 
 interface CanvasNodeProps {
   node: EditorNode;
+  nodes: ValueSetter<EditorNodeRecord>;
   canvasScale: number;
   transformRef: React.RefObject<Transform>;
   selectedNode: ValueSetter<ID | null>;
-  updateNodePosition: (id: ID, newX: number, newY: number) => void;
-  updateNodeSize: (id: ID, newW: number, newH: number) => void;
 }
 
-export default function CanvasNode({
-  node,
-  canvasScale,
-  transformRef,
-  selectedNode,
-  updateNodePosition,
-  updateNodeSize,
-}: CanvasNodeProps) {
+export default function CanvasNode({ node, nodes, canvasScale, transformRef, selectedNode }: CanvasNodeProps) {
   const selected = selectedNode !== null && selectedNode.value === node.id;
 
   const elementRef = useRef<HTMLDivElement>(null);
@@ -129,19 +122,18 @@ export default function CanvasNode({
         if (x !== 0 || y !== 0) {
           const { newX, newY } = getNewCoords(node.x, node.y, x, y);
 
-          updateNodePosition(node.id, newX, newY);
+          updateNodePosition(nodes.setter, node.id, newX, newY);
         }
 
         setIsDragging(false);
         setDragOffset({ x: 0, y: 0 });
       },
     });
-  }, [node.id, updateNodePosition, transformRef, dragOffset, node.x, node.y, selectThis]);
+  }, [node.id, transformRef, dragOffset, node.x, node.y, selectThis, nodes.setter]);
 
   const { newX, newY } = getNewCoords(node.x, node.y, dragOffset.x, dragOffset.y);
 
   const onResize = (_e: React.SyntheticEvent, data: ResizeCallbackData) => {
-    // Use newX and newY
     const newW = Math.ceil(data.size.width / MOVE_STEP) * MOVE_STEP;
     const newH = Math.ceil(data.size.height / MOVE_STEP) * MOVE_STEP;
     let dX = 0;
@@ -160,8 +152,8 @@ export default function CanvasNode({
         break;
     }
 
-    updateNodePosition(node.id, node.x - dX, node.y - dY);
-    updateNodeSize(node.id, newW, newH);
+    updateNodePosition(nodes.setter, node.id, node.x - dX, node.y - dY);
+    updateNodeSize(nodes.setter, node.id, newW, newH);
   };
 
   return (
@@ -200,7 +192,18 @@ export default function CanvasNode({
           e.stopPropagation();
           selectThis();
         }}
-      />
+      >
+        {getNodesByID(nodes.value, node.children).map((child) => (
+          <CanvasNode
+            key={child.id}
+            node={child}
+            nodes={nodes}
+            canvasScale={canvasScale}
+            transformRef={transformRef}
+            selectedNode={selectedNode}
+          />
+        ))}
+      </div>
     </Resizable>
   );
 }

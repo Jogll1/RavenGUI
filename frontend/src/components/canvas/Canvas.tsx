@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { pointer, select } from 'd3-selection';
 import { zoom, ZoomTransform } from 'd3-zoom';
 
-import { type Transform, type Environment, ID } from '../../lib/editor/editor.types';
+import { type Transform, type Environment } from '../../lib/editor/editor.types';
 import CanvasNode from './CanvasNode';
 import CanvasInfoBar from './CanvasInfoBar';
-import { DEFAULT_TARGET_X, DEFAULT_TARGET_Y, ROOT_ID } from '../../lib/editor/editor.shared';
+import { DEFAULT_TARGET_X, DEFAULT_TARGET_Y } from '../../lib/editor/editor.shared';
 import useShortcuts from '../../lib/hooks/useShortcuts';
-import { updateNodePosition, updateNodeSize } from '../../lib/editor/node-utils';
+import { getNodesByID, getRootNode } from '../../lib/editor/node-utils';
 import KEYBINDS from '../../lib/keybinds';
 
 // Goals
@@ -40,9 +40,6 @@ function isMouseWheel(event: any) {
 export default function Canvas({ environment }: { environment: Environment }) {
   const { register, unregister } = useShortcuts();
 
-  // Store nodes
-  const [nodes, setNodes] = [environment.nodes.value, environment.nodes.setter];
-
   // Current scale and panning offset
   const [transform, setTransform] = useState<Transform>({ x: 0, y: 0, scale: 1 });
 
@@ -50,6 +47,9 @@ export default function Canvas({ environment }: { environment: Environment }) {
   const transformRef = useRef<Transform>({ x: 0, y: 0, scale: 1 });
   const containerRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
+
+  const root = getRootNode(environment.nodes.value);
+  const rootChildren = getNodesByID(environment.nodes.value, root.children);
 
   // Deselect nodes when canvas clicked
   const handleOnClick = () => {
@@ -147,7 +147,7 @@ export default function Canvas({ environment }: { environment: Environment }) {
         />
         {/* Nodes */}
         <div ref={viewportRef} className="relative inset-0 origin-top-left will-change-transform">
-          {Object.values(nodes).map((node) => {
+          {/* {Object.values(nodes).map((node) => {
             if (node.id !== ROOT_ID) {
               return (
                 <CanvasNode
@@ -165,7 +165,17 @@ export default function Canvas({ environment }: { environment: Environment }) {
                 />
               );
             }
-          })}
+          })} */}
+          {rootChildren.map((node) => (
+            <CanvasNode
+              key={node.id}
+              node={node}
+              nodes={environment.nodes}
+              canvasScale={transform.scale}
+              transformRef={transformRef}
+              selectedNode={environment.selected}
+            />
+          ))}
         </div>
       </div>
     </div>
