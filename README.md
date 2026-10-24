@@ -1,5 +1,7 @@
 # RavenGUI
 
+NOTE: THIS IS A WORK-IN-PROGRESS PROJECT
+
 ## About
 
 RavenGUI is a framework-agnostic editor that focuses on creating responsive, accessible, consistent GUIs.
